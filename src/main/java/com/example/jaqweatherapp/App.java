@@ -15,11 +15,11 @@ public class App extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 640, 480);
 
         Font font = Font.loadFont(App.class.getResource("/fonts/Inter.ttf").toExternalForm(), 24);
-        System.out.println(font);
         scene.getStylesheets().add(App.class.getResource("/styles/main.css").toExternalForm());
 
         stage.setTitle("JacsWeatherApp");
         stage.setScene(scene);
+        stage.setResizable(true);
         stage.show();
     }
 

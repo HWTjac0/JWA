@@ -1,5 +1,13 @@
 * {
     -fx-font-family: 'Inter 24pt';
+    -fx-font-smoothing-type: "gray";
+}
+.AppTitle {
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+}
+.switch {
+    -fx-padding: 0;
 }
 .root {
 }
