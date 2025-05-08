@@ -1,5 +1,7 @@
+* {
+    -fx-font-family: 'Inter 24pt';
+}
 .root {
-    -fx-font-family: Inter;
 }
 .search {
     -fx-background-color: mistyrose;
