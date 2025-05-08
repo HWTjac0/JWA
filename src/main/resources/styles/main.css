@@ -1,0 +1,8 @@
+.root {
+    -fx-font-family: Inter;
+}
+.search {
+    -fx-background-color: mistyrose;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}

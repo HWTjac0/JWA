@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<HBox styleClass="search" VBox.vgrow="ALWAYS">
+    <padding>
+        <Insets top="12" right="12" bottom="12" left="12" />
+    </padding>
+    <VBox>
+        <HBox styleClass="searchHeading" HBox.hgrow="ALWAYS">
+            <Text>JacsWeatherApp</Text>
+            <ToggleSwitch></ToggleSwitch>
+        </HBox>
+        <HBox>
+
+        </HBox>
+        <HBox>
+
+        </HBox>
+    </VBox>
+</HBox>
