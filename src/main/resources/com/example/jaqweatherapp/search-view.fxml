@@ -29,7 +29,11 @@
                 </HBox>
             </HBox>
             <HBox alignment="CENTER">
-                <TextField promptText="np. Poznań"/>
+                <TextField promptText="np. Poznań">
+                    <padding>
+                        <Insets top="10" left="15" right="15" bottom="10" />
+                    </padding>
+                </TextField>
             </HBox>
         </VBox>
     </VBox>

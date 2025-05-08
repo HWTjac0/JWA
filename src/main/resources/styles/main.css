@@ -9,10 +9,8 @@
 .switch {
     -fx-padding: 0;
 }
-.root {
-}
 .search {
-    -fx-background-color: mistyrose;
+    -fx-background-color: linear-gradient(to bottom right, #ADD8E6, #87CEEB);
     -fx-font-size: 16;
     -fx-font-weight: bold;
 }
