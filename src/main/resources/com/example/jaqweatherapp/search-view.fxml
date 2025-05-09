@@ -32,7 +32,15 @@
                     <ToggleButton fx:id="coordianteSearchButton" text="Współrzędnych" toggleGroup="$searchModeGroup"/>
                 </HBox>
             </HBox>
-            <HBox alignment="CENTER">
+            <HBox alignment="CENTER" fx:id="citySearchView">
+                <TextField promptText="np. Poznań" prefWidth="350">
+                    <padding>
+                        <Insets top="10" left="15" right="15" bottom="10" />
+                    </padding>
+                </TextField>
+            </HBox>
+            <HBox alignment="CENTER" fx:id="coordinateSearchView">
+                <Label>Długość geograficzna</Label>
                 <TextField promptText="np. Poznań" prefWidth="350">
                     <padding>
                         <Insets top="10" left="15" right="15" bottom="10" />

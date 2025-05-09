@@ -24,25 +24,28 @@ public class SearchController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        citySearchButton.setUserData(SearchType.City);
+        coordianteSearchButton.setUserData(SearchType.Coordinates);
+
         searchModeGroup.selectedToggleProperty()
                 .addListener(new ChangeListener<Toggle>() {
                     @Override
                     public void changed(ObservableValue<? extends Toggle> observableValue, Toggle oldT, Toggle newT) {
                         ToggleButton toggleButton = (ToggleButton) newT;
-                        System.out.println(toggleButton.getText());
+                        if(newT == null) {
+                            return;
+                        }
+                        SearchType searchType = (SearchType) toggleButton.getUserData();
+                        switch (searchType) {
+                            case City:
+                                System.out.println("City");
+                                break;
+                            case Coordinates:
+                                System.out.println("Coordinates");
+                                break;
+                        }
                     }
                 });
         searchModeGroup.selectToggle(citySearchButton);
-    }
-
-    private void setSearchMode(SearchType searchMode) {
-        switch (searchMode) {
-            case City:
-
-                break;
-            case Coordinates:
-                System.out.println("Coordinates");
-                break;
-        }
     }
 }

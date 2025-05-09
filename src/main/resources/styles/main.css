@@ -4,13 +4,14 @@
 }
 .AppTitle {
     -fx-font-size: 25;
-    -fx-font-weight: bold;
+    -fx-fill: "white";
+    -fx-font-family: 'Inter 24pt Black';
 }
 .switch {
     -fx-padding: 0;
 }
 .search {
-    -fx-background-color: linear-gradient(to bottom right, #ADD8E6, #87CEEB);
+    -fx-background-color: linear-gradient(to bottom right, #a3d6fd, #7bcaff);
     -fx-font-size: 16;
     -fx-font-weight: bold;
 }
