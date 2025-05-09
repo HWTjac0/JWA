@@ -6,10 +6,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.*?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.text.Text?>
 <?import javafx.geometry.Insets?>
-
 <HBox styleClass="search" xmlns:fx="http://javafx.com/fxml"  fx:controller="com.example.jaqweatherapp.SearchController" >
+    <fx:define>
+        <ToggleGroup fx:id="searchModeGroup" />
+    </fx:define>
     <padding>
         <Insets top="20" right="15" bottom="20" left="15" />
     </padding>
@@ -23,13 +27,13 @@
                     Szukaj według:
                 </Text>
                 <HBox alignment="BASELINE_CENTER" spacing="5" >
-                    <Button fx:id="citySearchButton" text="Miasta"/>
+                    <ToggleButton fx:id="citySearchButton" text="Miasta" toggleGroup="$searchModeGroup"/>
                     <Text>/</Text>
-                    <Button fx:id="coordianteSearchButton" text="Współrzędnych"/>
+                    <ToggleButton fx:id="coordianteSearchButton" text="Współrzędnych" toggleGroup="$searchModeGroup"/>
                 </HBox>
             </HBox>
             <HBox alignment="CENTER">
-                <TextField promptText="np. Poznań">
+                <TextField promptText="np. Poznań" prefWidth="350">
                     <padding>
                         <Insets top="10" left="15" right="15" bottom="10" />
                     </padding>
