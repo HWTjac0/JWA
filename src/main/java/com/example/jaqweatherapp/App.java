@@ -18,10 +18,12 @@ public class App extends Application {
         Font font = Font.loadFont(App.class.getResource("/fonts/Inter_Black.ttf").toExternalForm(), 24);
         scene.getStylesheets().add(App.class.getResource("/styles/main.css").toExternalForm());
 
+        stage.setUserData("dupa");
         stage.setTitle("JacsWeatherApp");
         stage.setScene(scene);
         stage.setResizable(true);
         stage.show();
+        System.out.println(javafx.stage.Window.getWindows().get(0).getUserData());
     }
 
     public static void main(String[] args) {
