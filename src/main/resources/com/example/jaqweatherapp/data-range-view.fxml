@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" fx:controller="com.example.jaqweatherapp.DataRangeTypeController" >
+    <fx:define>
+        <ToggleGroup fx:id="dataRangeTypeGroup" />
+    </fx:define>
+    <VBox spacing="10" HBox.hgrow="NEVER" styleClass="headerContainer">
+        <padding>
+            <Insets left="25" right="25" bottom="20" top="20" />
+        </padding>
+        <HBox alignment="CENTER" spacing="10">
+            <Text>Wybierz typ danych:</Text>
+            <HBox spacing="5" alignment="BASELINE_CENTER">
+                <ToggleButton fx:id="currentData" text="Bieżące" toggleGroup="$dataRangeTypeGroup"/>
+                <Text>/</Text>
+                <ToggleButton fx:id="historicData" text="Historyczne" toggleGroup="$dataRangeTypeGroup"/>
+            </HBox>
+        </HBox>
+        <HBox fx:id="currentDataView" alignment="CENTER">
+            <GridPane vgap="10" hgap="10">
+                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" >Prognoza na: </Label>
+                <ComboBox  GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="currentDataForecast"/>
+                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" >Na ile dni wstecz:</Label>
+                <ComboBox GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="currentDataPastDays"/>
+            </GridPane>
+        </HBox>
+        <HBox fx:id="historicDataView" alignment="CENTER">
+            <GridPane vgap="10" hgap="10">
+                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" >Od: </Label>
+                <ComboBox  GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="historicDataBegin"/>
+                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" >Do: </Label>
+                <ComboBox GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="historicDataEnd"/>
+            </GridPane>
+        </HBox>
+    </VBox>
+</HBox>
