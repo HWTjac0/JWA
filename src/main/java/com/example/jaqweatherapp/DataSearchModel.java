@@ -1,4 +1,4 @@
 package com.example.jaqweatherapp;
 
-public class SearchModel {
+public class DataSearchModel {
 }

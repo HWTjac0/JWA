@@ -10,7 +10,7 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.text.Text?>
 <?import javafx.geometry.Insets?>
-<HBox xmlns:fx="http://javafx.com/fxml"  fx:controller="com.example.jaqweatherapp.SearchController" >
+<HBox xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.jaqweatherapp.SearchController" >
     <fx:define>
         <ToggleGroup fx:id="searchModeGroup" />
     </fx:define>
