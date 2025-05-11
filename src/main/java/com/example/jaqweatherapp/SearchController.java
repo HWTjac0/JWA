@@ -14,17 +14,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SearchController implements Initializable {
-    @FXML
-    private ToggleGroup searchModeGroup;
-    @FXML
-    private ToggleButton citySearchButton;
-    @FXML
-    private ToggleButton coordianteSearchButton;
-    @FXML
-    private HBox citySearchView;
-    @FXML
-    private HBox coordinateSearchView;
-
+    @FXML private ToggleGroup searchModeGroup;
+    @FXML private ToggleButton citySearchButton;
+    @FXML private ToggleButton coordianteSearchButton;
+    @FXML private HBox citySearchView;
+    @FXML private HBox coordinateSearchView;
 
     private enum SearchType { City, Coordinates };
 

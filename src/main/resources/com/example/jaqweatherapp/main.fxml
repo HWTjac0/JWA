@@ -4,7 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
 <BorderPane  styleClass="root" xmlns:fx="http://javafx.com/fxml">
     <top>
         <VBox spacing="10" styleClass="search">
@@ -13,6 +12,11 @@
             </padding>
             <HBox alignment="CENTER_LEFT" styleClass="searchHeading">
                 <Text styleClass="AppTitle" textAlignment="CENTER" HBox.hgrow="ALWAYS">JacsWeatherApp</Text>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <fx:include source="settings-dialog-view.fxml"/>
+                <padding>
+                    <Insets bottom="20" left="0" right="0" top="0" />
+                </padding>
             </HBox>
             <fx:include source="search-view.fxml" />
             <fx:include source="data-range-view.fxml" />

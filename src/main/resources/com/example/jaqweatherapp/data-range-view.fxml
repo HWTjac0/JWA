@@ -18,20 +18,20 @@
         <HBox alignment="CENTER" spacing="10">
             <Text>Wybierz typ danych:</Text>
             <HBox spacing="5" alignment="BASELINE_CENTER">
-                <ToggleButton fx:id="currentDataButton" text="Bieżące" toggleGroup="$dataRangeTypeGroup"/>
+                <ToggleButton styleClass="btn" fx:id="currentDataButton" text="Bieżące" toggleGroup="$dataRangeTypeGroup"/>
                 <Text>/</Text>
-                <ToggleButton fx:id="historicDataButton" text="Historyczne" toggleGroup="$dataRangeTypeGroup"/>
+                <ToggleButton styleClass="btn" fx:id="historicDataButton" text="Historyczne" toggleGroup="$dataRangeTypeGroup"/>
             </HBox>
         </HBox>
         <HBox fx:id="currentDataView" alignment="CENTER">
             <GridPane vgap="10" hgap="10">
                 <Label GridPane.rowIndex="0" GridPane.columnIndex="0" >Prognoza na: </Label>
                 <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
-                    <ComboBox fx:id="currentDataForecast"/>
+                    <ComboBox fx:id="currentDataForecast" styleClass="split-menu-btn"/>
                 </VBox>
                 <Label GridPane.rowIndex="1" GridPane.columnIndex="0" >Na ile dni wstecz:</Label>
                 <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
-                    <ComboBox fx:id="currentDataPastDays"/>
+                    <ComboBox fx:id="currentDataPastDays" styleClass="split-menu-btn"/>
                 </VBox>
             </GridPane>
         </HBox>

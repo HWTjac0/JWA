@@ -5,8 +5,23 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" >
-    <VBox spacing="10" HBox.hgrow="NEVER">
-        <Button text="Sprawdź wyniki"/>
-    </VBox>
+    <HBox spacing="10" HBox.hgrow="NEVER">
+        <VBox>
+
+            <Button styleClass="evalButton" text="Załaduj z pliku/plików">
+                <padding>
+                    <Insets left="15" right="15" top="10" bottom="10" />
+                </padding>
+            </Button>
+        </VBox>
+        <VBox>
+            <Button styleClass="evalButton" text="Sprawdź wyniki">
+                <padding>
+                    <Insets left="15" right="15" top="10" bottom="10" />
+                </padding>
+            </Button>
+        </VBox>
+    </HBox>
 </HBox>
