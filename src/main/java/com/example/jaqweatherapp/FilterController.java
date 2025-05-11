@@ -25,7 +25,10 @@ public class FilterController implements Initializable {
             Text filterName = new Text(model.filters[i].displayName);
             filterName.getStyleClass().add("filterLabel");
             GridPane.setMargin(filterName, new Insets(0, 0, 0, 20));
+
             ToggleSwitch toggleSwitch = new ToggleSwitch();
+            toggleSwitch.getStyleClass().add("filterToggle");
+
             filterList.add(filterName, i%2 * 2, i % rowCount);
             filterList.add(toggleSwitch, i%2 * 2 + 1, i % rowCount);
         }

@@ -2,6 +2,9 @@
     -fx-font-family: 'Inter 24pt';
     -fx-font-smoothing-type: "gray";
 }
+.root {
+    -fx-accent: #0093ff;
+}
 .text {
     -fx-font-weight: regular;
 }
@@ -18,6 +21,13 @@
     -fx-font-size: 16;
     -fx-font-weight: bold;
 }
+.filterToggle .thumb-area {
+    -fx-background-color: #ff9143;
+}
+.filterToggle:selected .thumb-area {
+    -fx-background-color: #37b5e3;
+}
+
 .filtersHeader {
     -fx-font-size: 26;
     -fx-font-weight: 600;
