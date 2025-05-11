@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.text.*?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.jaqweatherapp.SettingsDialogController">
-    <Button styleClass="settings_button">
-        <graphic>
-            <FontIcon iconLiteral="bi-gear-fill:24:WHITE" />
-        </graphic>
-    </Button>
-</HBox>
+<VBox xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.jaqweatherapp.SettingsDialogController">
+    <Text>Test</Text>
+</VBox>

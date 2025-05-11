@@ -45,6 +45,7 @@
 .settings_button {
     -fx-background-color: transparent;
     -fx-border-width: 0;
+    -fx-text-fill: white;
 }
 .footerContainer {
     -fx-background-color: #84a8ff;

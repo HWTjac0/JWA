@@ -10,6 +10,7 @@ module com.example.jaqweatherapp {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens com.example.jaqweatherapp to javafx.fxml;
     exports com.example.jaqweatherapp;
