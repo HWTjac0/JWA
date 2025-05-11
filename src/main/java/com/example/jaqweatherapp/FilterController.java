@@ -19,12 +19,15 @@ public class FilterController implements Initializable {
         initFilters();
     }
     private void initFilters() {
-        for(int i = 0; i < model.filters.length; i++) {
+        int filterCount = model.filters.length;
+        int rowCount = (int)((filterCount + 1) / 2);
+        for(int i = 0; i < filterCount; i++) {
             Text filterName = new Text(model.filters[i].displayName);
+            filterName.getStyleClass().add("filterLabel");
             GridPane.setMargin(filterName, new Insets(0, 0, 0, 20));
             ToggleSwitch toggleSwitch = new ToggleSwitch();
-            filterList.add(filterName, i%2 * 2, i % 5);
-            filterList.add(toggleSwitch, i%2 * 2 + 1, i % 5);
+            filterList.add(filterName, i%2 * 2, i % rowCount);
+            filterList.add(toggleSwitch, i%2 * 2 + 1, i % rowCount);
         }
     }
 }

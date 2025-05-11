@@ -26,4 +26,12 @@
             <fx:include source="filter-view.fxml"/>
         </VBox>
     </center>
+    <bottom>
+        <VBox styleClass="footerContainer">
+            <padding>
+                <Insets bottom="20" left="15" right="15" top="20" />
+            </padding>
+            <fx:include source="evaluate-view.fxml"/>
+        </VBox>
+    </bottom>
 </BorderPane>
