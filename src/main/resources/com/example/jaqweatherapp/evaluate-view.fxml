@@ -9,7 +9,6 @@
 <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" >
     <HBox spacing="10" HBox.hgrow="NEVER">
         <VBox>
-
             <Button styleClass="evalButton" text="Załaduj z pliku/plików">
                 <padding>
                     <Insets left="15" right="15" top="10" bottom="10" />

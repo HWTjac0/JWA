@@ -3,6 +3,7 @@ package com.example.jaqweatherapp;
 import javafx.util.Pair;
 
 public class DataSearchModel {
+    public UnitManager unitManager = new UnitManager();
     public FilterOption[] filters = new FilterOption[] {
             new FilterOption("Temperatura (2m)", "temperature_2m", UnitType.TEMPERATURE),
             new FilterOption("Względna wilgotność (2m)", "relative_humidity_2m", UnitType.PERCENTAGE),
