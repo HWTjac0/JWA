@@ -11,6 +11,7 @@ module com.example.jaqweatherapp {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    requires java.net.http;
 
     opens com.example.jaqweatherapp to javafx.fxml;
     exports com.example.jaqweatherapp;
