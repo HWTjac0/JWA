@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" >
+<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" fx:controller="com.example.jaqweatherapp.EvaluateController" >
     <HBox spacing="10" HBox.hgrow="NEVER">
         <VBox>
             <Button styleClass="evalButton" text="Załaduj z pliku/plików">
@@ -16,7 +16,7 @@
             </Button>
         </VBox>
         <VBox>
-            <Button styleClass="evalButton" text="Sprawdź wyniki">
+            <Button fx:id="fetchButton" styleClass="evalButton" text="Sprawdź wyniki">
                 <padding>
                     <Insets left="15" right="15" top="10" bottom="10" />
                 </padding>
