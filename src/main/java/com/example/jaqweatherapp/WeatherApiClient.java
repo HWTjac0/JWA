@@ -4,6 +4,6 @@ import java.util.Map;
 
 public class WeatherApiClient extends ApiClient {
     protected WeatherApiClient() {
-        super("open meteo");
+        super("https://api.open-meteo.com/v1/forecast");
     }
 }
