@@ -12,6 +12,8 @@ module com.example.jaqweatherapp {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires java.net.http;
+    requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.databind;
 
     opens com.example.jaqweatherapp to javafx.fxml;
     exports com.example.jaqweatherapp;
