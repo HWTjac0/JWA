@@ -1,21 +1,18 @@
 package com.example.jaqweatherapp;
 
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.controlsfx.control.ToggleSwitch;
 
-import javax.swing.event.ChangeListener;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class FilterController implements Initializable {
     @FXML private GridPane filterList;
-    private DataSearchModel model;
+    private FilterModel model;
     public void initialize(URL location, ResourceBundle resources) {
         model = Context.getInstance().getDataSearchModel();
         initFilters();

@@ -16,10 +16,10 @@ public class GeocodingApiClient extends ApiClient {
     }
     public CompletableFuture<List<Location>> getAddresses(String address) {
         String encodedAddress = URLEncoder.encode(address);
-        System.out.println(encodedAddress);
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("q", encodedAddress);
         parameters.put("format", "json");
+        parameters.put("accept-language", "pl");
         ObjectMapper objectMapper = new ObjectMapper();
         return sendGETRequest("/search", parameters)
                 .thenApply(reply -> {

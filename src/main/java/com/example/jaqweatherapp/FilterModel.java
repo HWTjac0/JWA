@@ -1,8 +1,6 @@
 package com.example.jaqweatherapp;
 
-import javafx.util.Pair;
-
-public class DataSearchModel {
+public class FilterModel {
     public UnitManager unitManager = new UnitManager();
     public FilterOption[] filters = new FilterOption[] {
             new FilterOption("Temperatura (2m)", "temperature_2m", UnitType.TEMPERATURE),

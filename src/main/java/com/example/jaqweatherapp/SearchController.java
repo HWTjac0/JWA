@@ -12,9 +12,7 @@ import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest
 import org.controlsfx.control.textfield.TextFields;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
@@ -32,8 +30,9 @@ public class SearchController implements Initializable {
     @FXML private TextField searchLatitude;
 
     GeocodingApiClient geocodingApiClient = Context.getInstance().getGeocodingApiClient();
+    SearchModel searchModel = Context.getInstance().getSearchModel();
 
-    private enum SearchType { City, Coordinates };
+    public enum SearchType { City, Coordinates };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,6 +68,7 @@ public class SearchController implements Initializable {
                             return;
                         }
                         SearchType searchType = (SearchType) toggleButton.getUserData();
+                        searchModel.currentSearchType = searchType;
                         toggleView(searchType);
                     }
                 });
@@ -84,28 +84,72 @@ public class SearchController implements Initializable {
         TextFormatter<Number> latitudeFormatter = new TextFormatter<>(filter);
         searchLatitude.setTextFormatter(latitudeFormatter);
         searchLongitude.setTextFormatter(longitudeFormatter);
+
+        searchLatitude.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.trim().isEmpty()) {
+                searchModel.areCoordsEmpty = true;
+                return;
+            }
+            searchModel.coordinates.latitude = Double.parseDouble(newValue);
+            if(!searchLongitude.getText().trim().isEmpty()) {
+                searchModel.areCoordsEmpty = false;
+            }
+        });
+        searchLongitude.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.trim().isEmpty()) {
+                searchModel.areCoordsEmpty = true;
+                return;
+            }
+            searchModel.coordinates.longitude = Double.parseDouble(newValue);
+            if(!searchLatitude.getText().trim().isEmpty()) {
+                searchModel.areCoordsEmpty = false;
+            }
+        });
     }
     private void initLocationGeocoder() {
-        AutoCompletionBinding<String> autoCompleter =
-                TextFields.bindAutoCompletion(searchBar,  request -> {
-                    String text = request.getUserText();
-                    if (text == null || text.trim().isEmpty()) {
-                        return null;
-                    }
-                    CompletableFuture<List<Location>> futureLocations = geocodingApiClient.getAddresses(text);
+        GeocodingSuggestionProvider suggestionProvider = new GeocodingSuggestionProvider(geocodingApiClient);
+        AutoCompletionBinding<String> autoCompleter = TextFields.bindAutoCompletion(searchBar, suggestionProvider);
+        autoCompleter.setDelay(200);
+        autoCompleter.setOnAutoCompleted(event -> {
+            String selected = event.getCompletion();
+            Location location = suggestionProvider.getByDisplayName(selected);
+            searchLatitude.setText(String.format("%.2f", location.latitude));
+            searchLongitude.setText(String.format("%.2f", location.longitude));
+            searchModel.coordinates = new Coordinates(location.latitude, location.longitude);
+            searchModel.locationName = selected;
+        });
+    }
+}
 
-                    return futureLocations.thenApply(addresses -> {
-                        List<String> newAddresses =  addresses.stream()
-                                        .map(l -> l.displayName)
-                                        .toList();
-                        System.out.println(newAddresses);
-                        return newAddresses;
-                            }
-                    ).exceptionally(error -> {
-                        System.out.println("Error: " + error);
-                        return null;
-                    }).join();
-                });
-        autoCompleter.setDelay(300);
+class GeocodingSuggestionProvider implements Callback<ISuggestionRequest, Collection<String>> {
+    GeocodingApiClient geocodingApiClient;
+    private Map<String, Location> cache = new WeakHashMap<>();
+    public GeocodingSuggestionProvider(GeocodingApiClient geocodingApiClient) {
+        this.geocodingApiClient = geocodingApiClient;
+    }
+    @Override
+    public Collection<String> call(ISuggestionRequest request) {
+        String text = request.getUserText();
+        cache.clear();
+        if (text == null || text.trim().isEmpty()) {
+            return null;
+        }
+        CompletableFuture<List<Location>> futureLocations = geocodingApiClient.getAddresses(text);
+        return futureLocations.thenApply(addresses -> {
+                    List<String> newAddresses =  addresses.stream()
+                            .map(l -> {
+                                cache.put(l.displayName, l);
+                                return l.displayName;
+                            })
+                            .toList();
+                    return newAddresses;
+                }
+        ).exceptionally(error -> {
+            System.out.println("Error: " + error);
+            return null;
+        }).join();
+    }
+    public Location getByDisplayName(String displayName) {
+        return cache.get(displayName);
     }
 }
