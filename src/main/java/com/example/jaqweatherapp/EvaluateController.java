@@ -1,5 +1,6 @@
 package com.example.jaqweatherapp;
 
+import com.almasb.fxgl.core.collection.Array;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -15,12 +16,16 @@ public class EvaluateController implements Initializable {
     WeatherApiClient weatherApiClient = new WeatherApiClient();
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
-            Map<String, String> params = new HashMap<>();
+            HashMap<String, String> params = new HashMap<>();
+            params.put("hourly", "");
             for(FilterOption opt : dataSearchModel.filters) {
                 if(!opt.isSet) {
                     continue;
                 }
+                String val = params.get("hourly") + (params.get("hourly").isEmpty() ? "" : ",") + opt.value;
+                params.put("hourly", val);
             }
+
         });
     }
 }
