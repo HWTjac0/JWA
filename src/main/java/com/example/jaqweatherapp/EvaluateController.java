@@ -57,7 +57,11 @@ public class EvaluateController implements Initializable {
             params.put("precipitation_unit", currentPrec);
             params.put("latitude", String.valueOf(searchModel.coordinates.latitude));
             params.put("longitude", String.valueOf(searchModel.coordinates.longitude));
-            System.out.println(weatherApiClient.buildQueryString(params));
+            weatherApiClient.getForecast(params)
+                    .thenApply(reply -> {
+                        System.out.println(reply);
+                        return reply;
+                    });
         });
     }
 }

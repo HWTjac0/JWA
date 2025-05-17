@@ -41,7 +41,7 @@ public abstract class ApiClient {
         HttpRequest req = buildRequest(endpoint + queryString)
                 .GET()
                 .build();
-
+        System.out.println(req.uri().toString());
         return httpClient
                 .sendAsync(req, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body);
