@@ -23,6 +23,7 @@ public class EvaluateController implements Initializable {
     SearchModel searchModel = Context.getInstance().getSearchModel();
     DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
     WeatherApiClient weatherApiClient = Context.getInstance().getWeatherApiClient();
+    ForecastModel forecastModel = Context.getInstance().getForecastModel();
 
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
@@ -35,6 +36,12 @@ public class EvaluateController implements Initializable {
             Task<ForecastModel> forecastTask = new Task<>() {
                 @Override
                 protected ForecastModel call() throws Exception {
+                    try{
+                        forecastModel.dateSeries.clear();
+                        forecastModel.dataMap.clear();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     CompletableFuture<String> modelPromise = weatherApiClient.getForecast(params);
                     String response = modelPromise.join();
                     try {

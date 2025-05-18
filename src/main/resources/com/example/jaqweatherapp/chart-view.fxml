@@ -15,7 +15,7 @@
         <Insets left="10" right="10" top="10" bottom="10" />
     </padding>
     <Label text="This content is from the FXML file!" />
-    <HBox fx:id="chartContainer">
+    <StackPane fx:id="chartContainer" VBox.vgrow="ALWAYS">
 
-    </HBox>
+    </StackPane>
 </VBox>

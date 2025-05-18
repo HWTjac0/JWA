@@ -26,9 +26,9 @@ public class ForecastModelDeserializer extends StdDeserializer<ForecastModel> {
         FilterModel filterModel = Context.getInstance().getFilterModel();
         JsonNode root = jp.getCodec().readTree(jp);
         JsonNode data = root.get("hourly");
-        forecastModel.dateSeries = StreamSupport.stream(data.get("time").spliterator(), false)
+        forecastModel.dateSeries.addAll(StreamSupport.stream(data.get("time").spliterator(), false)
                 .map(JsonNode::toString)
-                .toList();
+                .toList());
         Iterator<String> fields = data.fieldNames();
 
         fields.forEachRemaining(field -> {
