@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 import com.example.jaqweatherapp.DateRangeModel.DataRangeType;
@@ -107,19 +108,33 @@ public class DataRangeTypeController implements Initializable {
         historicDataEnd.setValue(dateRangeModel.historicEndDate);
         historicDataBegin.setShowWeekNumbers(true);
         historicDataEnd.setShowWeekNumbers(true);
-        Callback<DatePicker, DateCell> beginRangeFactory = new DateRangeFactory(89, -1);
-        Callback<DatePicker, DateCell> endRangeFactory = new DateRangeFactory(0, 15);
+        Callback<DatePicker, DateCell> beginRangeFactory = new DateRangeFactory(dateRangeModel.MAX_PAST_DAYS, -1);
+        Callback<DatePicker, DateCell> endRangeFactory = new DateRangeFactory(0, dateRangeModel.MAX_FUTURE_DAYS);
         historicDataBegin.setDayCellFactory(beginRangeFactory);
         historicDataEnd.setDayCellFactory(endRangeFactory);
         historicDataBegin
                 .valueProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     dateRangeModel.historicStartDate = newValue;
+                    int newPastDays =  dateRangeModel.MAX_PAST_DAYS - Math.toIntExact(Duration.between(
+                            LocalDate.now().minusDays(dateRangeModel.MAX_PAST_DAYS).atStartOfDay(),
+                            newValue.atStartOfDay()
+                    ).toDays()) - 1;
+                    historicDataEnd.setDayCellFactory(
+                            new DateRangeFactory( newPastDays, dateRangeModel.MAX_FUTURE_DAYS)
+                    );
                 });
         historicDataEnd
                 .valueProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     dateRangeModel.historicEndDate = newValue;
+                    int newFutureDays = Math.abs(Math.toIntExact(Duration.between(
+                            LocalDate.now().plusDays(dateRangeModel.MAX_FUTURE_DAYS).atStartOfDay(),
+                            newValue.atStartOfDay()
+                    ).toDays()));
+                    historicDataBegin.setDayCellFactory(
+                            new DateRangeFactory(dateRangeModel.MAX_PAST_DAYS, newFutureDays)
+                    );
                 });
     }
 }
