@@ -13,8 +13,9 @@ import javafx.util.Callback;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
-
+import com.example.jaqweatherapp.DateRangeModel.DataRangeType;
 public class DataRangeTypeController implements Initializable {
+    public DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
     @FXML private ToggleGroup dataRangeTypeGroup;
     @FXML private ToggleButton currentDataButton;
     @FXML private ToggleButton historicDataButton;
@@ -25,13 +26,12 @@ public class DataRangeTypeController implements Initializable {
     @FXML private DatePicker historicDataBegin;
     @FXML private DatePicker historicDataEnd;
 
-    private enum DataRangeType { Current, Historic };
     public void initialize(URL location, ResourceBundle resources) {
         initCurrentDataForecast();
         initCurrentDataPastDays();
         initHistoricData();
 
-        currentDataButton.setUserData(DataRangeType.Current);
+        currentDataButton.setUserData(DataRangeType.Forecast);
         historicDataButton.setUserData(DataRangeType.Historic);
         dataRangeTypeGroup.selectedToggleProperty()
                 .addListener(new ChangeListener<Toggle>() {
@@ -42,6 +42,7 @@ public class DataRangeTypeController implements Initializable {
                             return;
                         }
                         DataRangeType dataType = (DataRangeType) toggleButton.getUserData();
+                        dateRangeModel.dataRangeType = dataType;
                         toggleView(dataType);
                     }
                 });
@@ -49,7 +50,7 @@ public class DataRangeTypeController implements Initializable {
     }
     private void toggleView(DataRangeType dataType) {
         switch(dataType) {
-            case Current:
+            case Forecast:
                 historicDataView.setVisible(false);
                 historicDataView.setManaged(false);
                 currentDataView.setVisible(true);
@@ -72,15 +73,20 @@ public class DataRangeTypeController implements Initializable {
                 new ComboOption("16 Dni", "16")
         );
         currentDataForecast.setItems(comboOptions);
-        currentDataForecast.getSelectionModel().select(0);
+        currentDataForecast.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((options, oldValue, newValue) -> {
+                    dateRangeModel.forecastFutureDays = newValue.getValue();
+        });
+        currentDataForecast.getSelectionModel().selectFirst();
     }
     private void initCurrentDataPastDays() {
         ObservableList<ComboOption> comboOptions = FXCollections.observableArrayList(
                 new ComboOption("0 Dni", "0"),
                 new ComboOption("1 Dzień", "1"),
-                new ComboOption("2 Dzień", "2"),
-                new ComboOption("3 Dzień", "3"),
-                new ComboOption("5 Dzień", "5"),
+                new ComboOption("2 Dni", "2"),
+                new ComboOption("3 Dni", "3"),
+                new ComboOption("5 Dni", "5"),
                 new ComboOption("1 Tydzień", "7"),
                 new ComboOption("2 Tygodnie", "14"),
                 new ComboOption("1 Miesiąc", "30"),
@@ -89,17 +95,32 @@ public class DataRangeTypeController implements Initializable {
 
         );
         currentDataPastDays.setItems(comboOptions);
-        currentDataPastDays.getSelectionModel().select(0);
+        currentDataPastDays.getSelectionModel()
+                        .selectedItemProperty()
+                        .addListener((options, oldValue, newValue) -> {
+                            dateRangeModel.forecastPastDays = newValue.getValue();
+                        });
+        currentDataPastDays.getSelectionModel().selectFirst();
     }
     private void initHistoricData() {
-        historicDataBegin.setValue(LocalDate.now().minusDays(1));
-        historicDataEnd.setValue(LocalDate.now());
+        historicDataBegin.setValue(dateRangeModel.historicStartDate);
+        historicDataEnd.setValue(dateRangeModel.historicEndDate);
         historicDataBegin.setShowWeekNumbers(true);
         historicDataEnd.setShowWeekNumbers(true);
         Callback<DatePicker, DateCell> beginRangeFactory = new DateRangeFactory(89, -1);
         Callback<DatePicker, DateCell> endRangeFactory = new DateRangeFactory(0, 15);
         historicDataBegin.setDayCellFactory(beginRangeFactory);
         historicDataEnd.setDayCellFactory(endRangeFactory);
+        historicDataBegin
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    dateRangeModel.historicStartDate = newValue;
+                });
+        historicDataEnd
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    dateRangeModel.historicEndDate = newValue;
+                });
     }
 }
 

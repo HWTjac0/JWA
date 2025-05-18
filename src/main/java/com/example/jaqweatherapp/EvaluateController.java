@@ -12,12 +12,14 @@ public class EvaluateController implements Initializable {
     @FXML Button fetchButton;
     FilterModel filterModel = Context.getInstance().getFilterModel();
     SearchModel searchModel = Context.getInstance().getSearchModel();
+    DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
     WeatherApiClient weatherApiClient = Context.getInstance().getWeatherApiClient();
 
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
             HashMap<String, String> params = new HashMap<>();
             if(!setFilterParams(params)) return;
+            setDataRangeParams(params);
             params.put("latitude", String.valueOf(searchModel.coordinates.latitude));
             params.put("longitude", String.valueOf(searchModel.coordinates.longitude));
             ObjectMapper mapper = new ObjectMapper();
@@ -31,6 +33,18 @@ public class EvaluateController implements Initializable {
                         return reply;
                     });
         });
+    }
+    private void setDataRangeParams(HashMap<String, String> params) {
+        switch (dateRangeModel.dataRangeType) {
+            case Forecast -> {
+                params.put("past_days", dateRangeModel.forecastPastDays);
+                params.put("future_days", dateRangeModel.forecastFutureDays);
+            }
+            case Historic -> {
+                params.put("start_date", dateRangeModel.historicStartDate.toString());
+                params.put("end_date", dateRangeModel.historicEndDate.toString());
+            }
+        }
     }
     private Boolean setFilterParams(HashMap<String, String> params) {
         params.put("hourly", "");

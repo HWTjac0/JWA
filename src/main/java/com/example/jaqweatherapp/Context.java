@@ -7,6 +7,7 @@ public class Context {
     private GeocodingApiClient geocodingApiClient = new GeocodingApiClient();
     private SearchModel searchModel = new SearchModel();
     private ForecastModel forecastModel = new ForecastModel();
+    private DateRangeModel dateRangeModel = new DateRangeModel();
 
     public static Context getInstance() {
         return context;
@@ -18,4 +19,5 @@ public class Context {
     public GeocodingApiClient getGeocodingApiClient() { return geocodingApiClient; }
     public SearchModel getSearchModel() { return searchModel; }
     public ForecastModel getForecastModel() { return forecastModel; }
+    public DateRangeModel getDateRangeModel() { return dateRangeModel; }
 }
