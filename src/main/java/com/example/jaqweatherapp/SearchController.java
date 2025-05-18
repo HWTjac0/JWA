@@ -136,13 +136,12 @@ class GeocodingSuggestionProvider implements Callback<ISuggestionRequest, Collec
         }
         CompletableFuture<List<Location>> futureLocations = geocodingApiClient.getAddresses(text);
         return futureLocations.thenApply(addresses -> {
-                    List<String> newAddresses =  addresses.stream()
-                            .map(l -> {
-                                cache.put(l.displayName, l);
-                                return l.displayName;
-                            })
-                            .toList();
-                    return newAddresses;
+            return addresses.stream()
+                    .map(l -> {
+                        cache.put(l.displayName, l);
+                        return l.displayName;
+                    })
+                    .toList();
                 }
         ).exceptionally(error -> {
             System.out.println("Error: " + error);

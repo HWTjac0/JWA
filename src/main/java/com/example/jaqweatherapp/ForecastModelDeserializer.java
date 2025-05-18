@@ -39,7 +39,7 @@ public class ForecastModelDeserializer extends StdDeserializer<ForecastModel> {
                     .map(JsonNode::asDouble)
                     .toList();
             DataSeries series = new DataSeries(values, "unit");
-            forecastModel.data.put(field, series);
+            forecastModel.dataMap.put(field, series);
         });
         return forecastModel;
     }

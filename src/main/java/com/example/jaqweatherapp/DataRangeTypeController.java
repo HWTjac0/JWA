@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -91,6 +92,39 @@ public class DataRangeTypeController implements Initializable {
         currentDataPastDays.getSelectionModel().select(0);
     }
     private void initHistoricData() {
+        historicDataBegin.setValue(LocalDate.now().minusDays(1));
         historicDataEnd.setValue(LocalDate.now());
+        historicDataBegin.setShowWeekNumbers(true);
+        historicDataEnd.setShowWeekNumbers(true);
+        Callback<DatePicker, DateCell> beginRangeFactory = new DateRangeFactory(89, -1);
+        Callback<DatePicker, DateCell> endRangeFactory = new DateRangeFactory(0, 15);
+        historicDataBegin.setDayCellFactory(beginRangeFactory);
+        historicDataEnd.setDayCellFactory(endRangeFactory);
     }
+}
+
+class DateRangeFactory implements Callback<DatePicker, DateCell> {
+    private final int pastDaysAllowed;
+    private final int futureDaysAllowed;
+    public DateRangeFactory(int pastDaysAllowed, int futureDaysAllowed) {
+        this.pastDaysAllowed = pastDaysAllowed;
+        this.futureDaysAllowed = futureDaysAllowed;
+    }
+    @Override
+    public DateCell call(DatePicker datePicker) {
+        return new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                LocalDate today = LocalDate.now();
+                LocalDate pastDaysLimit = today.minusDays(pastDaysAllowed);
+                LocalDate futureDaysLimit = today.plusDays(futureDaysAllowed);
+                if(item.isBefore(pastDaysLimit) || item.isAfter(futureDaysLimit)) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #9f9f9f");
+                }
+            }
+        };
+    }
+
 }

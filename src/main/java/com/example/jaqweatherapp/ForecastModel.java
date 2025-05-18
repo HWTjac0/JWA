@@ -8,6 +8,6 @@ import java.util.List;
 
 @JsonDeserialize(using = ForecastModelDeserializer.class)
 public class ForecastModel {
-    public HashMap<String, DataSeries> data = new HashMap<>();
+    public HashMap<String, DataSeries> dataMap = new HashMap<>();
     public List<String> dateSeries = new ArrayList<>();
 }
