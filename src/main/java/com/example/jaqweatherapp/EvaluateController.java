@@ -1,12 +1,21 @@
 package com.example.jaqweatherapp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class EvaluateController implements Initializable {
     @FXML Button fetchButton;
@@ -23,17 +32,33 @@ public class EvaluateController implements Initializable {
             params.put("latitude", String.valueOf(searchModel.coordinates.latitude));
             params.put("longitude", String.valueOf(searchModel.coordinates.longitude));
             ObjectMapper mapper = new ObjectMapper();
-                    weatherApiClient.getForecast(params)
-                    .thenApply(reply -> {
-                        try {
-                            ForecastModel forecastModel = mapper.readValue(reply, ForecastModel.class);
-                            System.out.println(forecastModel.dateSeries);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                        return reply;
-                    });
+            Task<ForecastModel> forecastTask = new Task<>() {
+                @Override
+                protected ForecastModel call() throws Exception {
+                    CompletableFuture<String> modelPromise = weatherApiClient.getForecast(params);
+                    String response = modelPromise.join();
+                    try {
+                        return mapper.readValue(response, ForecastModel.class);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+            forecastTask.setOnSucceeded(e -> {
+                Parent root;
+                try {
+                    root = new FXMLLoader(App.class.getResource("chart-view.fxml")).load();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.show();
+            });
+            new Thread(forecastTask).start();
         });
+
     }
     private void setDataRangeParams(HashMap<String, String> params) {
         switch (dateRangeModel.dataRangeType) {
