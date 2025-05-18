@@ -27,6 +27,7 @@ public class EvaluateController implements Initializable {
                     .thenApply(reply -> {
                         try {
                             ForecastModel forecastModel = mapper.readValue(reply, ForecastModel.class);
+                            System.out.println(forecastModel.dateSeries);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }

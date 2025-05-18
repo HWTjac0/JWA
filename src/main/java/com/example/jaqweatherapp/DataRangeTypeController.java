@@ -128,10 +128,10 @@ public class DataRangeTypeController implements Initializable {
                 .valueProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     dateRangeModel.historicEndDate = newValue;
-                    int newFutureDays = Math.abs(Math.toIntExact(Duration.between(
+                    int newFutureDays = dateRangeModel.MAX_FUTURE_DAYS - Math.abs(Math.toIntExact(Duration.between(
                             LocalDate.now().plusDays(dateRangeModel.MAX_FUTURE_DAYS).atStartOfDay(),
                             newValue.atStartOfDay()
-                    ).toDays()));
+                    ).toDays())) - 1;
                     historicDataBegin.setDayCellFactory(
                             new DateRangeFactory(dateRangeModel.MAX_PAST_DAYS, newFutureDays)
                     );
