@@ -14,7 +14,7 @@ public class FilterController implements Initializable {
     @FXML private GridPane filterList;
     private FilterModel model;
     public void initialize(URL location, ResourceBundle resources) {
-        model = Context.getInstance().getDataSearchModel();
+        model = Context.getInstance().getFilterModel();
         initFilters();
     }
     private void initFilters() {

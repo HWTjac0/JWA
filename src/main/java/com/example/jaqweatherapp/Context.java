@@ -6,14 +6,16 @@ public class Context {
     private WeatherApiClient weatherApiClient = new WeatherApiClient();
     private GeocodingApiClient geocodingApiClient = new GeocodingApiClient();
     private SearchModel searchModel = new SearchModel();
+    private ForecastModel forecastModel = new ForecastModel();
 
     public static Context getInstance() {
         return context;
     }
-    public FilterModel getDataSearchModel() {
+    public FilterModel getFilterModel() {
         return filterModel;
     }
     public WeatherApiClient getWeatherApiClient() { return weatherApiClient; }
     public GeocodingApiClient getGeocodingApiClient() { return geocodingApiClient; }
     public SearchModel getSearchModel() { return searchModel; }
+    public ForecastModel getForecastModel() { return forecastModel; }
 }

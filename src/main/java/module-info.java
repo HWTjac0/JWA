@@ -14,6 +14,7 @@ module com.example.jaqweatherapp {
     requires java.net.http;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
+    requires com.google.gson;
 
     opens com.example.jaqweatherapp to javafx.fxml;
     exports com.example.jaqweatherapp;

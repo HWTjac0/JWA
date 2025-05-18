@@ -13,4 +13,12 @@ public class FilterModel {
             new FilterOption("Prędkość wiatru (10m)", "wind_speed_10m", UnitType.SPEED),
             new FilterOption("Zachmurzenie", "cloud_cover", UnitType.PERCENTAGE),
     };
+    public String getFilterDisplay(String filterName){
+        for(FilterOption filter : filters){
+            if (filter.value == filterName){
+                return filter.displayName;
+            }
+        }
+        return null;
+    }
 }

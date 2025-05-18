@@ -24,7 +24,7 @@ public class SettingsDialogController implements Initializable {
     @FXML
     private HBox settingSpeedButtons;
 
-    UnitManager unitManager = Context.getInstance().getDataSearchModel().unitManager;
+    UnitManager unitManager = Context.getInstance().getFilterModel().unitManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
