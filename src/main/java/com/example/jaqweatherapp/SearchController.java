@@ -123,7 +123,7 @@ public class SearchController implements Initializable {
 
 class GeocodingSuggestionProvider implements Callback<ISuggestionRequest, Collection<String>> {
     GeocodingApiClient geocodingApiClient;
-    private Map<String, Location> cache = new WeakHashMap<>();
+    private final Map<String, Location> cache = new WeakHashMap<>();
     public GeocodingSuggestionProvider(GeocodingApiClient geocodingApiClient) {
         this.geocodingApiClient = geocodingApiClient;
     }
@@ -135,14 +135,12 @@ class GeocodingSuggestionProvider implements Callback<ISuggestionRequest, Collec
             return null;
         }
         CompletableFuture<List<Location>> futureLocations = geocodingApiClient.getAddresses(text);
-        return futureLocations.thenApply(addresses -> {
-            return addresses.stream()
-                    .map(l -> {
-                        cache.put(l.displayName, l);
-                        return l.displayName;
-                    })
-                    .toList();
-                }
+        return futureLocations.thenApply(addresses -> addresses.stream()
+                .map(l -> {
+                    cache.put(l.displayName, l);
+                    return l.displayName;
+                })
+                .toList()
         ).exceptionally(error -> {
             System.out.println("Error: " + error);
             return null;
