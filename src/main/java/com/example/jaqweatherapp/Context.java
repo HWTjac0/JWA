@@ -8,6 +8,7 @@ public class Context {
     private SearchModel searchModel = new SearchModel();
     private ForecastModel forecastModel = new ForecastModel();
     private DateRangeModel dateRangeModel = new DateRangeModel();
+    private CacheManager cacheManager = new CacheManager();
 
     public static Context getInstance() {
         return context;
@@ -20,4 +21,5 @@ public class Context {
     public SearchModel getSearchModel() { return searchModel; }
     public ForecastModel getForecastModel() { return forecastModel; }
     public DateRangeModel getDateRangeModel() { return dateRangeModel; }
+    public CacheManager getCacheManager() { return cacheManager; }
 }
