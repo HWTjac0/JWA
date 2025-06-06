@@ -1,22 +1,62 @@
 package com.example.jaqweatherapp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CacheManager {
-    List<String> availableCache = new ArrayList<>();
-    String cacheDir;
+    Map<String, Path> availableCache = new HashMap<>();
+    Path cacheDir;
+    ObjectMapper mapper = new ObjectMapper();
     public CacheManager() {
-        cacheDir = getUserCacheDir().toString();
-        System.out.println("Cache dir: " + cacheDir);
+        cacheDir = getUserCacheDir();
+        availableCache = readAvailableCache();
+        System.out.println(availableCache);
     }
-    public void readAvailableCache() {
-
+    private CacheUnit readCache(Path cachePath) {
+        try {
+            CacheUnit cacheUnit = mapper.readValue(cachePath.toFile(), CacheUnit.class);
+            return cacheUnit;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void invalidateCache(String hash) {
+        Path cachePath = availableCache.get(hash);
+        cachePath.toFile().delete();
+        availableCache.remove(hash);
+    }
+    public Map<String, Path> readAvailableCache() {
+        Map<String, Path> cache = new HashMap<>();
+        for(File file : cacheDir.toFile().listFiles()) {
+            cache.put(file.getName().substring(0, file.getName().lastIndexOf(".")), file.toPath());
+        }
+        return cache;
+    }
+    public Result<String> getCache(String hash) {
+        CacheUnit cacheUnit = readCache(availableCache.get(hash));
+        if(cacheUnit.isExpired()) {
+            invalidateCache(hash);
+            return new Result<>(false, "");
+        }
+        return new Result<>(true, cacheUnit.getData());
+    }
+    public void setCache(String hash, String data) {
+        CacheUnit cacheUnit = new CacheUnit(System.currentTimeMillis(), 60, data);
+        String filename = hash + ".json";
+        Path currentCachePath = Paths.get(cacheDir.toString(), filename);
+        availableCache.put(hash, currentCachePath);
+        try {
+            mapper.writeValue(currentCachePath.toFile(), cacheUnit);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     public static Path getUserCacheDir() {
         String os = System.getProperty("os.name").toLowerCase();
