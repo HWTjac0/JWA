@@ -25,7 +25,7 @@ public class EvaluateController implements Initializable {
     WeatherApiClient weatherApiClient = Context.getInstance().getWeatherApiClient();
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
     ApiParameters apiParameters = new ApiParameters();
-
+    CacheManager cacheManager = Context.getInstance().getCacheManager();
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
             apiParameters.clear();
@@ -35,24 +35,25 @@ public class EvaluateController implements Initializable {
 
             apiParameters.add("latitude", String.valueOf(searchModel.coordinates.latitude));
             apiParameters.add("longitude", String.valueOf(searchModel.coordinates.longitude));
-            System.out.println(apiParameters.getUniqueName());
-
+            System.out.println(apiParameters.getHash());
             ObjectMapper mapper = new ObjectMapper();
             Task<ForecastModel> forecastTask = new Task<>() {
                 @Override
                 protected ForecastModel call() throws Exception {
-                    try{
-                        forecastModel.dateSeries.clear();
-                        forecastModel.dataMap.clear();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
-                    String response = modelPromise.join();
-                    try {
-                        return mapper.readValue(response, ForecastModel.class);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    forecastModel.dateSeries.clear();
+                    forecastModel.dataMap.clear();
+                    Result<String> res = cacheManager.getCache(apiParameters.getHash());
+                    if(!res.valid()) {
+                        CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
+                        String response = modelPromise.join();
+                        cacheManager.setCache(apiParameters.getHash(), response);
+                        try {
+                            return mapper.readValue(response, ForecastModel.class);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        return mapper.readValue(res.data(), ForecastModel.class);
                     }
                     return null;
                 }

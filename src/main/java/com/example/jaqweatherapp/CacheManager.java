@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,9 @@ public class CacheManager {
         return cache;
     }
     public Result<String> getCache(String hash) {
+        if(!availableCache.containsKey(hash)) {
+            return new Result<>(false, "");
+        }
         CacheUnit cacheUnit = readCache(availableCache.get(hash));
         if(cacheUnit.isExpired()) {
             invalidateCache(hash);
@@ -48,7 +52,7 @@ public class CacheManager {
         return new Result<>(true, cacheUnit.getData());
     }
     public void setCache(String hash, String data) {
-        CacheUnit cacheUnit = new CacheUnit(System.currentTimeMillis(), 60, data);
+        CacheUnit cacheUnit = new CacheUnit(Instant.now().getEpochSecond(), 3600, data);
         String filename = hash + ".json";
         Path currentCachePath = Paths.get(cacheDir.toString(), filename);
         availableCache.put(hash, currentCachePath);
