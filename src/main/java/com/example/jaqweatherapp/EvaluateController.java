@@ -26,6 +26,7 @@ public class EvaluateController implements Initializable {
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
     ApiParameters apiParameters = new ApiParameters();
     CacheManager cacheManager = Context.getInstance().getCacheManager();
+
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
             apiParameters.clear();
@@ -35,7 +36,6 @@ public class EvaluateController implements Initializable {
 
             apiParameters.add("latitude", String.valueOf(searchModel.coordinates.latitude));
             apiParameters.add("longitude", String.valueOf(searchModel.coordinates.longitude));
-            System.out.println(apiParameters.getHash());
             ObjectMapper mapper = new ObjectMapper();
             Task<ForecastModel> forecastTask = new Task<>() {
                 @Override
@@ -43,6 +43,7 @@ public class EvaluateController implements Initializable {
                     forecastModel.dateSeries.clear();
                     forecastModel.dataMap.clear();
                     Result<String> res = cacheManager.getCache(apiParameters.getHash());
+                    System.out.println(res.valid());
                     if(!res.valid()) {
                         CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
                         String response = modelPromise.join();

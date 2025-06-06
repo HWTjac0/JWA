@@ -30,7 +30,6 @@ public class MultilineChart extends StackPane {
         buildChart();
     }
     public void addCharts(ArrayList<LineChart> charts) {
-        System.out.println(charts.size());
         for (LineChart chart : charts) {
             styleChart(chart);
             this.charts.add(chart);

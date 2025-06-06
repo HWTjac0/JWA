@@ -32,10 +32,11 @@ public class ChartController implements Initializable {
         Set<String> filters = forecastModel.dataMap.keySet();
         filters.remove("time");
         ArrayList<LineChart> charts = new ArrayList<>();
+        String[] colors = {"#00ff00", "#ff0000", "#ff0000"};
+        int j =0;
         for(String filter : filters) {
             LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
             XYChart.Series<String, Number> series = new XYChart.Series<>();
-            System.out.println("Filter: " + filter);
             for(int i = 0; i < forecastModel.dateSeries.size(); i++) {
                 series.getData()
                         .add(new XYChart.Data<String, Number>(

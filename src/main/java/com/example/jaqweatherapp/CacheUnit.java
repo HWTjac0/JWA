@@ -1,6 +1,7 @@
 package com.example.jaqweatherapp;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
@@ -30,6 +31,7 @@ public class CacheUnit {
     public String getData() {
         return data;
     }
+    @JsonIgnore
     public boolean isExpired() {
         return Instant.now().getEpochSecond() - cacheTime > ttl;
     }
