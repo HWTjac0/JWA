@@ -24,14 +24,19 @@ public class EvaluateController implements Initializable {
     DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
     WeatherApiClient weatherApiClient = Context.getInstance().getWeatherApiClient();
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
+    ApiParameters apiParameters = new ApiParameters();
 
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
-            HashMap<String, String> params = new HashMap<>();
-            if(!setFilterParams(params)) return;
-            setDataRangeParams(params);
-            params.put("latitude", String.valueOf(searchModel.coordinates.latitude));
-            params.put("longitude", String.valueOf(searchModel.coordinates.longitude));
+            apiParameters.clear();
+
+            if(!setFilterParams(apiParameters)) return;
+            setDataRangeParams(apiParameters);
+
+            apiParameters.add("latitude", String.valueOf(searchModel.coordinates.latitude));
+            apiParameters.add("longitude", String.valueOf(searchModel.coordinates.longitude));
+            System.out.println(apiParameters.getUniqueName());
+
             ObjectMapper mapper = new ObjectMapper();
             Task<ForecastModel> forecastTask = new Task<>() {
                 @Override
@@ -42,7 +47,7 @@ public class EvaluateController implements Initializable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    CompletableFuture<String> modelPromise = weatherApiClient.getForecast(params);
+                    CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
                     String response = modelPromise.join();
                     try {
                         return mapper.readValue(response, ForecastModel.class);
@@ -67,26 +72,26 @@ public class EvaluateController implements Initializable {
         });
 
     }
-    private void setDataRangeParams(HashMap<String, String> params) {
+    private void setDataRangeParams(ApiParameters params) {
         switch (dateRangeModel.dataRangeType) {
             case Forecast -> {
-                params.put("past_days", dateRangeModel.forecastPastDays);
-                params.put("future_days", dateRangeModel.forecastFutureDays);
+                params.add("past_days", dateRangeModel.forecastPastDays);
+                params.add("future_days", dateRangeModel.forecastFutureDays);
             }
             case Historic -> {
-                params.put("start_date", dateRangeModel.historicStartDate.toString());
-                params.put("end_date", dateRangeModel.historicEndDate.toString());
+                params.add("start_date", dateRangeModel.historicStartDate.toString());
+                params.add("end_date", dateRangeModel.historicEndDate.toString());
             }
         }
     }
-    private Boolean setFilterParams(HashMap<String, String> params) {
-        params.put("hourly", "");
+    private Boolean setFilterParams(ApiParameters params) {
+        params.add("hourly", "");
         for(FilterOption opt : filterModel.filters) {
             if(!opt.isSet) {
                 continue;
             }
             String val = params.get("hourly") + (params.get("hourly").isEmpty() ? "" : ",") + opt.value;
-            params.put("hourly", val);
+            params.add("hourly", val);
         }
         Map<UnitType, Unit> currentUnits = filterModel.unitManager.currentUnits;
         String currentTemp = switch(currentUnits.get(UnitType.TEMPERATURE)) {
@@ -113,9 +118,9 @@ public class EvaluateController implements Initializable {
             System.out.println("Uzupełnij współrzędne");
             return false;
         }
-        params.put("wind_speed_unit", currentSpeed);
-        params.put("temperature_unit", currentTemp);
-        params.put("precipitation_unit", currentPrec);
+        params.add("wind_speed_unit", currentSpeed);
+        params.add("temperature_unit", currentTemp);
+        params.add("precipitation_unit", currentPrec);
         return true;
     }
 }
