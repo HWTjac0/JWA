@@ -7,12 +7,11 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -20,17 +19,27 @@ import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class ChartController implements Initializable {
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
+    SearchModel searchModel = Context.getInstance().getSearchModel();
+    GeocodingApiClient geocodingApiClient = Context.getInstance().getGeocodingApiClient();
     @FXML private HBox chartContainer;
+    @FXML private Label chartTitle;
     @FXML private VBox filterList;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initFilterList();
+        chartTitle.setText("Dane pogodowe dla: " + getDisplayAddress());
+        searchModel.locationName = "";
+    }
+    private String getDisplayAddress() {
+        if(!searchModel.locationName.isEmpty()) {
+            return searchModel.locationName;
+        } else {
+            return geocodingApiClient.reverseGeocode(searchModel.coordinates.latitude, searchModel.coordinates.longitude).join().displayName;
+        }
     }
     private void initFilterList() {
         ToggleGroup filterGroup = new ToggleGroup();
@@ -41,14 +50,59 @@ public class ChartController implements Initializable {
             filterButton.setMaxWidth(Double.MAX_VALUE);
 
             filterButton.onActionProperty().set(event -> {
-                System.out.println(filterButton.getUserData());
+                buildChart(filterButton.getUserData().toString());
             });
 
             filterList.getChildren().add(filterButton);
         }
         filterGroup.getToggles().getFirst().setSelected(true);
+        buildChart(filterGroup.getSelectedToggle().getUserData().toString());
     }
     private void buildChart(String currentFilter) {
-        CategoryAxis xAxis = new CategoryAxis();
+        chartContainer.getChildren().clear();
+        List<Double> data = forecastModel.dataMap.get(currentFilter).data();
+        List<Long> dates = forecastModel.dateSeries;
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Data");
+        long minDate = dates.getFirst();
+        long maxDate = dates.getLast();
+        xAxis.setAutoRanging(false);
+        xAxis.setAnimated(false);
+        xAxis.setLowerBound(minDate);
+        xAxis.setUpperBound(maxDate);
+        xAxis.setTickUnit((maxDate - minDate) / 10);
+        xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:ss");
+            @Override
+            public String toString(Number object) {
+               return dateFormat.format(new Date(object.longValue() ));
+            }
+
+            @Override
+            public Number fromString(String string) {
+                return null;
+            }
+        });
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Wartość [" + forecastModel.dataMap.get(currentFilter).unit() + "]");
+        yAxis.setAutoRanging(false);
+        yAxis.setAnimated(false);
+        double minVal = data.stream().min(Double::compare).get();
+        double maxVal = data.stream().max(Double::compare).get();
+        yAxis.setLowerBound(minVal);
+        yAxis.setUpperBound(maxVal);
+
+        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setCreateSymbols(false);
+        XYChart.Series<Number, Number> series = new XYChart.Series();
+        for (int i = 0; i < forecastModel.dateSeries.size(); i++) {
+            series.getData().add(new XYChart.Data<>(dates.get(i), data.get(i)));
+        }
+        chart.getData().add(series);
+
+        chart.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        chart.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        HBox.setHgrow(chart, Priority.ALWAYS);
+        chartContainer.getChildren().add(chart);
     }
 }

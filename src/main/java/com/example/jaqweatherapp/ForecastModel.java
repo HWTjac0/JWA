@@ -10,17 +10,7 @@ import java.util.List;
 @JsonDeserialize(using = ForecastModelDeserializer.class)
 public class ForecastModel {
     public HashMap<String, DataSeries> dataMap = new HashMap<>();
-    public List<String> dateSeries = new ArrayList<>();
-
+    public List<Long> dateSeries = new ArrayList<Long>();
     @JsonIgnore
-    public static String getFilterLabel(String filter) {
-        return switch (filter) {
-            case "windspeed_10m" -> "Prędkość wiatru (10m)";
-            case "temperature2m" -> "Temperatura (2m)";
-            case "rain" -> "Deszcze";
-            case "showers" -> "Przelotne opady";
-            case "surfacepressure" -> "Ciśnienie  powierzch";
-            default -> throw new IllegalStateException("Unexpected value: " + filter);
-        };
-    }
+    public String displayAddress;
 }

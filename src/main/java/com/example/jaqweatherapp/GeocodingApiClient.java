@@ -30,4 +30,20 @@ public class GeocodingApiClient extends ApiClient {
                     }
                 });
     }
+    public CompletableFuture<Location> reverseGeocode(Double lat, Double lon) {
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("lat", lat.toString());
+        parameters.put("lon", lon.toString());
+        parameters.put("accept-language", "pl");
+        parameters.put("format", "json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        return sendGETRequest("/reverse", parameters)
+                .thenApply(reply -> {
+                    try {
+                        return objectMapper.readValue(reply, Location.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
 }

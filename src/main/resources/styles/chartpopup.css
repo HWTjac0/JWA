@@ -7,3 +7,7 @@
 .filterChartLabel {
     -fx-font-size: 16px;
 }
+.chartTitle {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}

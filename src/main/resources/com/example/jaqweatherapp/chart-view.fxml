@@ -14,8 +14,8 @@
     <padding>
         <Insets left="10" right="10" top="10" bottom="10" />
     </padding>
-    <VBox>
-        <HBox>
+    <VBox VBox.vgrow="ALWAYS">
+        <HBox VBox.vgrow="ALWAYS" spacing="15">
             <VBox spacing="5">
                 <Label styleClass="filterChartLabel">Wybierz filtr:</Label>
                 <VBox fx:id="filterList" spacing="10" styleClass="filterChartList">
@@ -24,11 +24,11 @@
                     </padding>
                 </VBox>
             </VBox>
-            <VBox></VBox>
+            <VBox HBox.hgrow="ALWAYS">
+                <Label fx:id="chartTitle" styleClass="chartTitle"></Label>
+                <HBox fx:id="chartContainer" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"></HBox>
+            </VBox>
         </HBox>
         <HBox></HBox>
     </VBox>
-    <HBox fx:id="chartContainer" VBox.vgrow="ALWAYS">
-
-    </HBox>
 </VBox>
