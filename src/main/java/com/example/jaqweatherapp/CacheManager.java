@@ -59,6 +59,7 @@ public class CacheManager {
         try {
             mapper.writeValue(currentCachePath.toFile(), cacheUnit);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

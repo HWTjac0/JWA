@@ -30,7 +30,7 @@ public class ApiParameters {
                 hash.append(entry.getKey()).append(":").append(entry.getValue());
             }
             byte[] hashBytes = digest.digest(hash.toString().getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hashBytes);
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(hashBytes);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

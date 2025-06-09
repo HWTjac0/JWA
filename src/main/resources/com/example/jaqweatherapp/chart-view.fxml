@@ -14,7 +14,20 @@
     <padding>
         <Insets left="10" right="10" top="10" bottom="10" />
     </padding>
-    <Label text="This content is from the FXML file!" />
+    <VBox>
+        <HBox>
+            <VBox spacing="5">
+                <Label styleClass="filterChartLabel">Wybierz filtr:</Label>
+                <VBox fx:id="filterList" spacing="10" styleClass="filterChartList">
+                    <padding>
+                        <Insets left="10" right="10" top="10" bottom="10"/>
+                    </padding>
+                </VBox>
+            </VBox>
+            <VBox></VBox>
+        </HBox>
+        <HBox></HBox>
+    </VBox>
     <HBox fx:id="chartContainer" VBox.vgrow="ALWAYS">
 
     </HBox>

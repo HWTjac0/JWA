@@ -7,11 +7,19 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -19,36 +27,28 @@ import java.util.Set;
 public class ChartController implements Initializable {
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
     @FXML private HBox chartContainer;
+    @FXML private VBox filterList;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Data");
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Wartość");
-        LineChart baseChart = new LineChart<>(xAxis, yAxis);
-        baseChart.getYAxis().setDisable(true);
-        MultilineChart multilineChart = new MultilineChart(baseChart);
+        initFilterList();
+    }
+    private void initFilterList() {
+        ToggleGroup filterGroup = new ToggleGroup();
+        for(String filter : forecastModel.dataMap.keySet()) {
+            ToggleButton filterButton = new ToggleButton(FilterModel.getFilterDisplay(filter));
+            filterButton.setUserData(filter);
+            filterButton.setToggleGroup(filterGroup);
+            filterButton.setMaxWidth(Double.MAX_VALUE);
 
-        Set<String> filters = forecastModel.dataMap.keySet();
-        filters.remove("time");
-        ArrayList<LineChart> charts = new ArrayList<>();
-        String[] colors = {"#00ff00", "#ff0000", "#ff0000"};
-        int j =0;
-        for(String filter : filters) {
-            LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            for(int i = 0; i < forecastModel.dateSeries.size(); i++) {
-                series.getData()
-                        .add(new XYChart.Data<String, Number>(
-                                forecastModel.dateSeries.get(i),
-                                forecastModel.dataMap.get(filter).data().get(i)
-                        ));
-            }
-            lineChart.getData().add(series);
-            charts.add(lineChart);
+            filterButton.onActionProperty().set(event -> {
+                System.out.println(filterButton.getUserData());
+            });
+
+            filterList.getChildren().add(filterButton);
         }
-        multilineChart.addCharts(charts);
-        chartContainer.getChildren().add(multilineChart);
-        HBox.setHgrow(multilineChart, Priority.ALWAYS);
+        filterGroup.getToggles().getFirst().setSelected(true);
+    }
+    private void buildChart(String currentFilter) {
+        CategoryAxis xAxis = new CategoryAxis();
     }
 }

@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -43,7 +44,6 @@ public class EvaluateController implements Initializable {
                     forecastModel.dateSeries.clear();
                     forecastModel.dataMap.clear();
                     Result<String> res = cacheManager.getCache(apiParameters.getHash());
-                    System.out.println(res.valid());
                     if(!res.valid()) {
                         CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
                         String response = modelPromise.join();
@@ -63,6 +63,8 @@ public class EvaluateController implements Initializable {
                 Parent root;
                 try {
                     root = new FXMLLoader(App.class.getResource("chart-view.fxml")).load();
+                    Font.loadFont(EvaluateController.class.getResource("/fonts/Inter.ttf").toExternalForm(), 24);
+                    root.getStylesheets().add(App.class.getResource("/styles/chartpopup.css").toExternalForm());
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
