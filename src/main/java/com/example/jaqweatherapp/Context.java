@@ -9,6 +9,7 @@ public class Context {
     private ForecastModel forecastModel = new ForecastModel();
     private DateRangeModel dateRangeModel = new DateRangeModel();
     private CacheManager cacheManager = new CacheManager();
+    private SettingsModel settingsModel = new SettingsModel();
 
     public static Context getInstance() {
         return context;
@@ -22,4 +23,5 @@ public class Context {
     public ForecastModel getForecastModel() { return forecastModel; }
     public DateRangeModel getDateRangeModel() { return dateRangeModel; }
     public CacheManager getCacheManager() { return cacheManager; }
+    public SettingsModel getSettingsModel() { return settingsModel; }
 }

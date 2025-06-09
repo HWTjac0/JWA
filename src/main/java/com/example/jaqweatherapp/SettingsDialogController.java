@@ -5,32 +5,39 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SettingsDialogController implements Initializable {
-    @FXML
-    private ToggleGroup settingTemp;
-    @FXML
-    private ToggleGroup settingMeasur;
-    @FXML
-    private ToggleGroup settingSpeed;
+    @FXML private ToggleGroup settingTemp;
+    @FXML private ToggleGroup settingMeasur;
+    @FXML private ToggleGroup settingSpeed;
 
-    @FXML
-    private HBox settingTempButtons;
-    @FXML
-    private HBox settingMeasurButtons;
-    @FXML
-    private HBox settingSpeedButtons;
+    @FXML private HBox settingTempButtons;
+    @FXML private HBox settingMeasurButtons;
+    @FXML private HBox settingSpeedButtons;
 
-    UnitManager unitManager = Context.getInstance().getFilterModel().unitManager;
+    @FXML private Button dirButton;
+    @FXML private Label dirLabel;
+    SettingsModel settingsModel = Context.getInstance().getSettingsModel();
+    UnitManager unitManager = settingsModel.unitManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        initDirChooser();
         initButtons();
     }
+    private void initDirChooser(){
+        dirLabel.setText(settingsModel.defaultExportPath.toString());
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        dirButton.setOnAction(event -> {
+            File selectedDirectory = directoryChooser.showDialog(null);
+        });
 
+    }
     private void initButtons() {
         // I could automate this maybe later somehow:P
         ToggleButton celsiusButton = new ToggleButton(Unit.Celsius.toString());

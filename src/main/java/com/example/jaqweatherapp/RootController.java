@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class RootController {
+    // It shouldnt be here
     @FXML
     public void openDialog(){
         try {
@@ -24,7 +25,7 @@ public class RootController {
 
             DialogPane dialogPane = dialog.getDialogPane();
             dialogPane.setContent(dialogContent);
-
+            //dialogPane.getStylesheets().add(RootController.class.getResource("main.css").toExternalForm());
             ButtonType applyButton = new ButtonType("Zastosuj", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType("Anuluj", ButtonBar.ButtonData.CANCEL_CLOSE);
 

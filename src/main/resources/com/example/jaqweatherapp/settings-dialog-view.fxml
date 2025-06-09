@@ -33,7 +33,15 @@
         <HBox alignment="CENTER" spacing="5" fx:id="settingSpeedButtons">
         </HBox>
     </VBox>
-    <VBox>
+    <VBox spacing="5">
         <Label>Domyślna ścieżka zapisu plików</Label>
+        <Label fx:id="dirLabel" styleClass="dirChooseLabel">
+            <padding>
+                <Insets top="3" bottom="3" left="3" right="3" />
+            </padding>
+        </Label>
+        <HBox alignment="CENTER">
+            <Button fx:id="dirButton">Zmień</Button>
+        </HBox>
     </VBox>
 </VBox>

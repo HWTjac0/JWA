@@ -7,13 +7,12 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 
+import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Timestamp;
@@ -30,12 +29,21 @@ public class ChartController implements Initializable {
     @FXML private Label chartTitle;
     @FXML private VBox filterList;
     @FXML private VBox exportList;
+    @FXML private Button exportButton;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initFilterList();
         initExportList();
+        initExportButton();
         chartTitle.setText("Dane pogodowe dla: " + getDisplayAddress());
         searchModel.locationName = "";
+    }
+    private void initExportButton(){
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        exportButton.setOnAction(event -> {
+           File file  = directoryChooser.showDialog(null);
+           System.out.println(file.getAbsolutePath());
+        });
     }
     private String getDisplayAddress() {
         if(!searchModel.locationName.isEmpty()) {
