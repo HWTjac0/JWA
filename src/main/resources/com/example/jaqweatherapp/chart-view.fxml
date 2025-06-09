@@ -17,11 +17,21 @@
     <VBox VBox.vgrow="ALWAYS">
         <HBox VBox.vgrow="ALWAYS" spacing="15">
             <VBox spacing="5">
-                <Label styleClass="filterChartLabel">Wybierz filtr:</Label>
-                <VBox fx:id="filterList" spacing="10" styleClass="filterChartList">
-                    <padding>
-                        <Insets left="10" right="10" top="10" bottom="10"/>
-                    </padding>
+                <VBox spacing="5">
+                    <Label styleClass="filterChartLabel">Wybierz filtr:</Label>
+                    <VBox fx:id="filterList" spacing="10" styleClass="filterChartList">
+                        <padding>
+                            <Insets left="10" right="10" top="10" bottom="10"/>
+                        </padding>
+                    </VBox>
+                </VBox>
+                <VBox>
+                    <Label styleClass="filterChartLabel">Eksportuj do pliku:</Label>
+                    <VBox fx:id="exportList" spacing="5" styleClass="filterChartList">
+                        <padding>
+                            <Insets left="10" right="10" top="10" bottom="10"/>
+                        </padding>
+                    </VBox>
                 </VBox>
             </VBox>
             <VBox HBox.hgrow="ALWAYS">

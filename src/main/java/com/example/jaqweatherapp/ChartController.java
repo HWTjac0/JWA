@@ -7,6 +7,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -28,9 +29,11 @@ public class ChartController implements Initializable {
     @FXML private HBox chartContainer;
     @FXML private Label chartTitle;
     @FXML private VBox filterList;
+    @FXML private VBox exportList;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initFilterList();
+        initExportList();
         chartTitle.setText("Dane pogodowe dla: " + getDisplayAddress());
         searchModel.locationName = "";
     }
@@ -39,6 +42,15 @@ public class ChartController implements Initializable {
             return searchModel.locationName;
         } else {
             return geocodingApiClient.reverseGeocode(searchModel.coordinates.latitude, searchModel.coordinates.longitude).join().displayName;
+        }
+    }
+    private void initExportList() {
+        for(String filter : forecastModel.dataMap.keySet()) {
+            CheckBox exportCheckbox = new CheckBox(FilterModel.getFilterDisplay(filter));
+            exportCheckbox.setUserData(filter);
+            exportCheckbox.setMaxWidth(Double.MAX_VALUE);
+            exportCheckbox.setSelected(true);
+            exportList.getChildren().add(exportCheckbox);
         }
     }
     private void initFilterList() {
@@ -99,7 +111,7 @@ public class ChartController implements Initializable {
             series.getData().add(new XYChart.Data<>(dates.get(i), data.get(i)));
         }
         chart.getData().add(series);
-
+        chart.setLegendVisible(false);
         chart.setPrefWidth(Region.USE_COMPUTED_SIZE);
         chart.setPrefHeight(Region.USE_COMPUTED_SIZE);
         HBox.setHgrow(chart, Priority.ALWAYS);
