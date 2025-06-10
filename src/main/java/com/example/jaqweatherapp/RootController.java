@@ -26,7 +26,6 @@ public class RootController {
 
             DialogPane dialogPane = dialog.getDialogPane();
             dialogPane.setContent(dialogContent);
-            //dialogPane.getStylesheets().add(RootController.class.getResource("main.css").toExternalForm());
             ButtonType applyButton = new ButtonType("Zastosuj", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType("Anuluj", ButtonBar.ButtonData.CANCEL_CLOSE);
 
@@ -38,6 +37,7 @@ public class RootController {
                 settingsModel.applySettings();
                 System.out.println("OK");
             } else {
+                settingsModel.setDefaults();
                 System.out.println("Settings dialog cancelled.");
             }
         } catch (IOException e) {

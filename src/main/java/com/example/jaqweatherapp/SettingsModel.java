@@ -12,6 +12,9 @@ public class SettingsModel {
     Path defaultExportPath;
 
     public SettingsModel() {
+        setDefaults();
+    }
+    public void setDefaults() {
         unitManager.currentUnits.put(UnitType.SPEED, Unit.get(prefs.get("unit_speed", Unit.KmPerHour.toString())));
         unitManager.currentUnits.put(UnitType.TEMPERATURE, Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString())));
         unitManager.currentUnits.put(UnitType.PRECIPITATION, Unit.get(prefs.get("unit_precipation", Unit.Millimeters.toString())));

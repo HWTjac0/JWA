@@ -98,7 +98,6 @@ public class EvaluateController implements Initializable {
             String val = params.get("hourly") + (params.get("hourly").isEmpty() ? "" : ",") + opt.value;
             params.add("hourly", val);
         }
-        Map<UnitType, Unit> currentUnits = filterModel.unitManager.currentUnits;
         String currentTemp = switch(Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString()))){
             case Unit.Fahrenheit -> "fahrenheit";
             default -> "celsius";

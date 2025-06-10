@@ -9,6 +9,7 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -36,6 +37,7 @@ public class SettingsDialogController implements Initializable {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         dirButton.setOnAction(event -> {
             File selectedDirectory = directoryChooser.showDialog(null);
+            settingsModel.defaultExportPath = Paths.get(selectedDirectory.getAbsolutePath());
         });
 
     }
