@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 public class EvaluateController implements Initializable {
     @FXML Button fetchButton;
@@ -27,7 +28,7 @@ public class EvaluateController implements Initializable {
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
     ApiParameters apiParameters = new ApiParameters();
     CacheManager cacheManager = Context.getInstance().getCacheManager();
-
+    Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
     public void initialize(URL location, ResourceBundle resources) {
         fetchButton.setOnAction(event -> {
             apiParameters.clear();
@@ -80,7 +81,7 @@ public class EvaluateController implements Initializable {
         switch (dateRangeModel.dataRangeType) {
             case Forecast -> {
                 params.add("past_days", dateRangeModel.forecastPastDays);
-                params.add("future_days", dateRangeModel.forecastFutureDays);
+                params.add("forecast_days", dateRangeModel.forecastFutureDays);
             }
             case Historic -> {
                 params.add("start_date", dateRangeModel.historicStartDate.toString());
@@ -98,15 +99,15 @@ public class EvaluateController implements Initializable {
             params.add("hourly", val);
         }
         Map<UnitType, Unit> currentUnits = filterModel.unitManager.currentUnits;
-        String currentTemp = switch(currentUnits.get(UnitType.TEMPERATURE)) {
+        String currentTemp = switch(Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString()))){
             case Unit.Fahrenheit -> "fahrenheit";
             default -> "celsius";
         };
-        String currentPrec = switch (currentUnits.get(UnitType.PRECIPITATION)) {
+        String currentPrec = switch (Unit.get(prefs.get("unit_precipation", Unit.Millimeters.toString()))) {
             case Unit.Inches -> "inch";
             default -> "mm";
         };
-        String currentSpeed = switch (currentUnits.get(UnitType.SPEED)) {
+        String currentSpeed = switch (Unit.get(prefs.get("unit_speed", Unit.KmPerHour.toString()))) {
             case Unit.MPerSecond -> "ms";
             case Unit.Knots -> "kn";
             case Unit.MilesPerHour -> "mph";
