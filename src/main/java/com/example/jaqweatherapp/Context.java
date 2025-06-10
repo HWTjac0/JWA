@@ -1,15 +1,17 @@
 package com.example.jaqweatherapp;
 
+import java.util.prefs.Preferences;
+
 public class Context {
-    private static Context context = new Context();
-    private FilterModel filterModel = new FilterModel();
-    private WeatherApiClient weatherApiClient = new WeatherApiClient();
-    private GeocodingApiClient geocodingApiClient = new GeocodingApiClient();
-    private SearchModel searchModel = new SearchModel();
-    private ForecastModel forecastModel = new ForecastModel();
-    private DateRangeModel dateRangeModel = new DateRangeModel();
-    private CacheManager cacheManager = new CacheManager();
-    private SettingsModel settingsModel = new SettingsModel();
+    private static final Context context = new Context();
+    private final FilterModel filterModel = new FilterModel();
+    private final WeatherApiClient weatherApiClient = new WeatherApiClient();
+    private final GeocodingApiClient geocodingApiClient = new GeocodingApiClient();
+    private final SearchModel searchModel = new SearchModel();
+    private final ForecastModel forecastModel = new ForecastModel();
+    private final DateRangeModel dateRangeModel = new DateRangeModel();
+    private final CacheManager cacheManager = new CacheManager();
+    private final SettingsModel settingsModel = new SettingsModel();
 
     public static Context getInstance() {
         return context;

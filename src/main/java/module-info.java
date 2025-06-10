@@ -15,6 +15,7 @@ module com.example.jaqweatherapp {
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
     requires com.google.gson;
+    requires java.prefs;
 
     opens com.example.jaqweatherapp to javafx.fxml;
     exports com.example.jaqweatherapp;

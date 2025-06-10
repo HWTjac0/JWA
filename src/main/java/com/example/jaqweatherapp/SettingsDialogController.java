@@ -10,6 +10,7 @@ import javafx.stage.DirectoryChooser;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class SettingsDialogController implements Initializable {
     @FXML private ToggleGroup settingTemp;
@@ -24,7 +25,7 @@ public class SettingsDialogController implements Initializable {
     @FXML private Label dirLabel;
     SettingsModel settingsModel = Context.getInstance().getSettingsModel();
     UnitManager unitManager = settingsModel.unitManager;
-
+    Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initDirChooser();
@@ -47,7 +48,9 @@ public class SettingsDialogController implements Initializable {
         settingTempButtons.getChildren().clear();
         settingTempButtons.getChildren().addAll(celsiusButton, fahrenheitButton);
         settingTemp.getToggles().addAll(celsiusButton, fahrenheitButton);
-        settingTemp.selectToggle(switch (unitManager.currentUnits.get(UnitType.TEMPERATURE)) {
+        settingTemp.selectToggle(switch (
+                Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString()))
+                ) {
             case Fahrenheit -> fahrenheitButton;
             default -> celsiusButton;
         });
@@ -64,7 +67,9 @@ public class SettingsDialogController implements Initializable {
         settingMeasurButtons.getChildren().clear();
         settingMeasurButtons.getChildren().addAll(milimeterButton, inchesButton);
         settingMeasur.getToggles().addAll(milimeterButton, inchesButton);
-        settingMeasur.selectToggle(switch (unitManager.currentUnits.get(UnitType.PRECIPITATION)) {
+        settingMeasur.selectToggle(switch (
+                Unit.get(prefs.get("unit_precipation", Unit.Millimeters.toString()))
+                ) {
             case Inches -> inchesButton;
             default -> milimeterButton;
         });
@@ -85,7 +90,9 @@ public class SettingsDialogController implements Initializable {
         settingSpeedButtons.getChildren().clear();
         settingSpeed.getToggles().addAll(kmperhButton, mpersButton, knotsButton, mphButton);
         settingSpeedButtons.getChildren().addAll(kmperhButton, mpersButton, knotsButton, mphButton);
-        settingSpeed.selectToggle(switch (unitManager.currentUnits.get(UnitType.SPEED)) {
+        settingSpeed.selectToggle(switch (
+                Unit.get(prefs.get("unit_speed", Unit.KmPerHour.toString()))
+                ) {
             case Knots -> knotsButton;
             case MilesPerHour -> mphButton;
             case MPerSecond -> mpersButton;

@@ -16,6 +16,7 @@ public class RootController {
     // It shouldnt be here
     @FXML
     public void openDialog(){
+        SettingsModel settingsModel = Context.getInstance().getSettingsModel();
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("settings-dialog-view.fxml"));
             Parent dialogContent = loader.load();
@@ -34,6 +35,7 @@ public class RootController {
             Optional<ButtonType> result = dialog.showAndWait();
 
             if (result.isPresent() && result.get() == applyButton) {
+                settingsModel.applySettings();
                 System.out.println("OK");
             } else {
                 System.out.println("Settings dialog cancelled.");
