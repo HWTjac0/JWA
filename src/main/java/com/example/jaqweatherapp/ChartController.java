@@ -15,16 +15,21 @@ import javafx.util.StringConverter;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.prefs.Preferences;
 
 public class ChartController implements Initializable {
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
     SearchModel searchModel = Context.getInstance().getSearchModel();
     GeocodingApiClient geocodingApiClient = Context.getInstance().getGeocodingApiClient();
+    Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
+
     @FXML private HBox chartContainer;
     @FXML private Label chartTitle;
     @FXML private VBox filterList;
@@ -41,8 +46,7 @@ public class ChartController implements Initializable {
     private void initExportButton(){
         DirectoryChooser directoryChooser = new DirectoryChooser();
         exportButton.setOnAction(event -> {
-           File file  = directoryChooser.showDialog(null);
-           System.out.println(file.getAbsolutePath());
+            Path exportPath = Paths.get(prefs.get("export_path", SettingsModel.getDefaultExportPath().toString()));
         });
     }
     private String getDisplayAddress() {
