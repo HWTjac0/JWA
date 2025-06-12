@@ -15,13 +15,13 @@ public enum Unit {
     Inches("in"),
     Percent("%");
     private final String label;
-    private static final Map<String, Unit> lookup = new HashMap<String, Unit>();
+    private static final Map<String, Unit> lookup = new HashMap<>();
     static {
         for (Unit unit : Unit.values()) {
            lookup.put(unit.label, unit);
         }
     }
-    private Unit(String label) {
+    Unit(String label) {
         this.label = label;
     }
     @Override
