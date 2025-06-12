@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.prefs.Preferences;
 
 public class ChartController implements Initializable {
-    ForecastModel forecastModel = Context.getInstance().getForecastModel();
+    ForecastModel forecastModel;
     SearchModel searchModel = Context.getInstance().getSearchModel();
     GeocodingApiClient geocodingApiClient = Context.getInstance().getGeocodingApiClient();
     Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
@@ -37,6 +37,7 @@ public class ChartController implements Initializable {
     @FXML private Button exportButton;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        forecastModel = new ForecastModel(Context.getInstance().getForecastModel());
         initFilterList();
         initExportList();
         initExportButton();
