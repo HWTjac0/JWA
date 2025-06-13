@@ -18,7 +18,8 @@ public class ForecastModelSerializer extends StdSerializer<ForecastModel> {
     @Override
     public void serialize(ForecastModel forecastModel, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
-
+        gen.writeNumberField("longitude", forecastModel.longitude);
+        gen.writeNumberField("latitude", forecastModel.latitude);
         gen.writeObjectFieldStart("hourly_units");
         gen.writeStringField("time", "iso8601");
         for(String v : forecastModel.exportDataSet) {

@@ -65,6 +65,7 @@ public class ChartController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         forecastModel = new ForecastModel(Context.getInstance().getForecastModel());
+        Context.getInstance().getForecastModel().clear();
         initLocation();
         initFilterList();
         initExportList();
@@ -128,7 +129,11 @@ public class ChartController implements Initializable {
         if(!searchModel.locationName.isEmpty()) {
             return searchModel.locationName;
         } else {
-            return geocodingApiClient.reverseGeocode(searchModel.coordinates.latitude, searchModel.coordinates.longitude).join().displayName;
+            try {
+                return geocodingApiClient.reverseGeocode(searchModel.coordinates.latitude, searchModel.coordinates.longitude).join().displayName;
+            } catch (Exception e) {
+                return "Nie udało sie uzyskać adresu";
+            }
         }
     }
     private void initExportList() {
@@ -223,7 +228,7 @@ public class ChartController implements Initializable {
         chartAddInfoMin.setText(stats.minValue().getValue() + unit + ", " + stats.minValue().getKey());
         chartAddInfoAvg.setText(numFormatter.format(stats.average()) + unit);
 
-        Color trendColor = Color.YELLOW;
+        Color trendColor = Color.DARKVIOLET;
         String trend = "Nieokreślony";
         Double slope =stats.regressionResult().slope();
         if(slope > 0) {

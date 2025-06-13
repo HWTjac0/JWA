@@ -58,8 +58,8 @@ public class CacheManager {
         }
         return new Result<>(true, cacheUnit.getData());
     }
-    public void setCache(String hash, String data, CacheTTL expiration) {
-        CacheUnit cacheUnit = new CacheUnit(Instant.now().getEpochSecond(), expiration, data);
+    public void setCache(String hash, String data, CacheTTL expiration, String query) {
+        CacheUnit cacheUnit = new CacheUnit(Instant.now().getEpochSecond(), expiration, data, query);
         String filename = hash + ".json";
         Path currentCachePath = Paths.get(cacheDir.toString(), filename);
         availableCache.put(hash, currentCachePath);

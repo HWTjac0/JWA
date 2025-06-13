@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +16,7 @@ public class GeocodingApiClient extends ApiClient {
     protected GeocodingApiClient() {
         super("https://nominatim.openstreetmap.org/");
     }
-    public CompletableFuture<List<Location>> getAddresses(String address) {
+    public CompletableFuture<List<Location>> getAddresses(String address) throws SocketTimeoutException, ConnectException {
         String encodedAddress = URLEncoder.encode(address);
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("q", encodedAddress);
@@ -30,7 +32,7 @@ public class GeocodingApiClient extends ApiClient {
                     }
                 });
     }
-    public CompletableFuture<Location> reverseGeocode(Double lat, Double lon) {
+    public CompletableFuture<Location> reverseGeocode(Double lat, Double lon) throws SocketTimeoutException, ConnectException {
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("lat", lat.toString());
         parameters.put("lon", lon.toString());

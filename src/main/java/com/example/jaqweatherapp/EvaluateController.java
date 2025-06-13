@@ -32,6 +32,7 @@ public class EvaluateController implements Initializable {
     SearchModel searchModel = Context.getInstance().getSearchModel();
     DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
     WeatherApiClient weatherApiClient = Context.getInstance().getWeatherApiClient();
+    GeocodingApiClient geocodingApiClient = Context.getInstance().getGeocodingApiClient();
     ForecastModel forecastModel = Context.getInstance().getForecastModel();
     ApiParameters apiParameters = new ApiParameters();
     CacheManager cacheManager = Context.getInstance().getCacheManager();
@@ -46,7 +47,8 @@ public class EvaluateController implements Initializable {
         Failure_Incomplete_Filters(Color.RED, "Musisz wybrać jakie dane chcesz sprawdzić!"),
         Failure_Incomplete_Address(Color.RED, "Uzupełnij adres!"),
         Failure_Incomplete_Coords(Color.RED, "Uzupełnij współrzędne!"),
-        Failure_Wrong_Coords(Color.RED, "Wprowadź poprawne współrzędne!");
+        Failure_Wrong_Coords(Color.RED, "Wprowadź poprawne współrzędne!"),
+        Failure_Wrong_Address(Color.RED, "Wprowadź poprawne adres!");
         public final Color color;
         public final String message;
         LoadingStatus(Color color, String message) {
@@ -137,10 +139,24 @@ public class EvaluateController implements Initializable {
                 setLoadingStatus(LoadingStatus.Failure_Incomplete_Address);
                 return false;
             }
-        } else if (searchModel.areCoordsEmpty) {
+            try {
+                List<Location> locations = geocodingApiClient.getAddresses(searchModel.locationName).join();
+                if(locations.isEmpty()) {
+                    setLoadingStatus(LoadingStatus.Failure_Wrong_Address);
+                    return false;
+                }
+                Location l = locations.getFirst();
+                searchModel.coordinates = new Coordinates(l.latitude, l.longitude);
+                searchModel.areCoordsEmpty = false;
+            } catch (Exception e) {
+                setLoadingStatus(LoadingStatus.Failure_Timeout);
+            }
+        } else if (searchModel.currentSearchType == SearchController.SearchType.Coordinates
+                && searchModel.areCoordsEmpty) {
             setLoadingStatus(LoadingStatus.Failure_Incomplete_Coords);
             return false;
-        } else if(!searchModel.areCoordsCorrect()) {
+        } else if(searchModel.currentSearchType == SearchController.SearchType.Coordinates
+                && !searchModel.areCoordsCorrect()) {
             setLoadingStatus(LoadingStatus.Failure_Wrong_Coords);
             return false;
         }
@@ -181,20 +197,29 @@ public class EvaluateController implements Initializable {
                 forecastModel.dataMap.clear();
                 Result<String> res = cacheManager.getCache(apiParameters.getHash());
                 if (!res.valid()) {
-                    CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
-                    String response = modelPromise.join();
-                    CacheTTL expiration = CacheTTL.Hour;
-                    if (dateRangeModel.dataRangeType == DateRangeModel.DataRangeType.Historic &&
-                            dateRangeModel.historicEndDate.isBefore(LocalDate.now())) {
-                        expiration = CacheTTL.Infinite;
-                    }
-                    cacheManager.setCache(apiParameters.getHash(), response, expiration);
                     try {
-                        // It implicitly writes to global ForeastModel
-                        return mapper.readValue(response, ForecastModel.class);
+                        CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
+                        String response = modelPromise.join();
+                        CacheTTL expiration = CacheTTL.Hour;
+                        if (dateRangeModel.dataRangeType == DateRangeModel.DataRangeType.Historic &&
+                                dateRangeModel.historicEndDate.isBefore(LocalDate.now())) {
+                            expiration = CacheTTL.Infinite;
+                        }
+                        System.out.println(weatherApiClient.baseUrl + weatherApiClient.buildQueryString(apiParameters.getParameters()));
+                        cacheManager.setCache(
+                                apiParameters.getHash(),
+                                response,
+                                expiration,
+                                weatherApiClient.baseUrl + weatherApiClient.buildQueryString(apiParameters.getParameters()));
+                        try {
+                            // It implicitly writes to global ForeastModel
+                            return mapper.readValue(response, ForecastModel.class);
+                        } catch (Exception e) {
+                            setLoadingStatus(LoadingStatus.Failure_Timeout);
+                            e.printStackTrace();
+                        }
                     } catch (Exception e) {
                         setLoadingStatus(LoadingStatus.Failure_Timeout);
-                        e.printStackTrace();
                     }
                 } else {
                     return mapper.readValue(res.data(), ForecastModel.class);

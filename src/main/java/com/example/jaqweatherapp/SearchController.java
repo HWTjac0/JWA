@@ -11,6 +11,7 @@ import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
 import org.controlsfx.control.textfield.TextFields;
 
+import java.net.ConnectException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -109,6 +110,10 @@ public class SearchController implements Initializable {
     private void initLocationGeocoder() {
         GeocodingSuggestionProvider suggestionProvider = new GeocodingSuggestionProvider(geocodingApiClient);
         AutoCompletionBinding<String> autoCompleter = TextFields.bindAutoCompletion(searchBar, suggestionProvider);
+        searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
+            searchModel.locationName = newValue;
+            searchModel.areCoordsEmpty = true;
+        });
         autoCompleter.setDelay(200);
         autoCompleter.setOnAutoCompleted(event -> {
             String selected = event.getCompletion();
@@ -116,6 +121,7 @@ public class SearchController implements Initializable {
             searchLatitude.setText(String.format("%.2f", location.latitude));
             searchLongitude.setText(String.format("%.2f", location.longitude));
             searchModel.coordinates = new Coordinates(location.latitude, location.longitude);
+            searchModel.areCoordsEmpty = false;
             searchModel.locationName = selected;
         });
     }
@@ -134,17 +140,21 @@ class GeocodingSuggestionProvider implements Callback<ISuggestionRequest, Collec
         if (text == null || text.trim().isEmpty()) {
             return null;
         }
-        CompletableFuture<List<Location>> futureLocations = geocodingApiClient.getAddresses(text);
-        return futureLocations.thenApply(addresses -> addresses.stream()
-                .map(l -> {
-                    cache.put(l.displayName, l);
-                    return l.displayName;
-                })
-                .toList()
-        ).exceptionally(error -> {
-            System.out.println("Error: " + error);
-            return null;
-        }).join();
+        try {
+            CompletableFuture<List<Location>> futureLocations = geocodingApiClient.getAddresses(text);
+            return futureLocations.thenApply(addresses -> addresses.stream()
+                    .map(l -> {
+                        cache.put(l.displayName, l);
+                        return l.displayName;
+                    })
+                    .toList()
+            ).exceptionally(error -> {
+                return null;
+            }).join();
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
     public Location getByDisplayName(String displayName) {
         return cache.get(displayName);

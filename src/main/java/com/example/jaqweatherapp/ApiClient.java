@@ -1,5 +1,8 @@
 package com.example.jaqweatherapp;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -36,7 +39,7 @@ public abstract class ApiClient {
                 .collect(Collectors.joining("&"));
         return "?" + params;
     }
-    protected CompletableFuture<String> sendGETRequest(String endpoint, Map<String, String> parameters) {
+    protected CompletableFuture<String> sendGETRequest(String endpoint, Map<String, String> parameters) throws ConnectException, SocketTimeoutException {
         String queryString = buildQueryString(parameters);
         HttpRequest req = buildRequest(endpoint + queryString)
                 .GET()

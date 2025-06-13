@@ -30,6 +30,8 @@ public class ForecastModelDeserializer extends StdDeserializer<ForecastModel> {
         JsonNode root = jp.getCodec().readTree(jp);
         JsonNode data = root.get("hourly");
         JsonNode units = root.get("hourly_units");
+        forecastModel.latitude = root.get("latitude").asDouble();
+        forecastModel.longitude = root.get("longitude").asDouble();
         forecastModel.dateSeries.addAll(StreamSupport.stream(data.get("time").spliterator(), false)
                 .map((node) -> {
                     String dateString = node.asText().replaceAll("\"", "");

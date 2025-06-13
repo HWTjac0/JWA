@@ -19,12 +19,14 @@ record RegressionResult(double slope, double intercept) {}
 public class ForecastModel {
     public HashMap<String, DataSeries> dataMap = new HashMap<>();
     public List<Long> dateSeries = new ArrayList<Long>();
+    public double latitude;
+    public double longitude;
     @JsonIgnore
     public HashMap<String, Stats> statsMap = new HashMap<>();
     @JsonIgnore
     public Set<String> exportDataSet = new HashSet<>();
     @JsonIgnore
-    public String displayAddress;
+    public String displayAddress = "";
 
     @JsonIgnore
     public ForecastModel() {
@@ -45,6 +47,7 @@ public class ForecastModel {
 
     @JsonIgnore
     private void populateStats() {
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         for (String key : dataMap.keySet()) {
             double max = 0;
@@ -94,5 +97,12 @@ public class ForecastModel {
         beta = betaNumerator / betaDenominator;
         double alpha = avgY - (beta * avgX);
         return new RegressionResult(beta, alpha);
+    }
+    @JsonIgnore
+    public void clear() {
+        dataMap.clear();
+        dateSeries.clear();
+        statsMap.clear();
+        exportDataSet.clear();
     }
 }
