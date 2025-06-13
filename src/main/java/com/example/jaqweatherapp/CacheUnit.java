@@ -33,6 +33,6 @@ public class CacheUnit {
     }
     @JsonIgnore
     public boolean isExpired() {
-        return Instant.now().getEpochSecond() - cacheTime > ttl.toSeconds();
+        return !(ttl == CacheTTL.Infinite) || Instant.now().getEpochSecond() - cacheTime > ttl.toSeconds();
     }
 }

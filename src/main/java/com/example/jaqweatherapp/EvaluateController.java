@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +49,12 @@ public class EvaluateController implements Initializable {
                     if(!res.valid()) {
                         CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
                         String response = modelPromise.join();
-                        cacheManager.setCache(apiParameters.getHash(), response);
+                        CacheTTL expiration = CacheTTL.Hour;
+                        if(dateRangeModel.dataRangeType == DateRangeModel.DataRangeType.Historic &&
+                                dateRangeModel.historicEndDate.isBefore(LocalDate.now())) {
+                            expiration = CacheTTL.Infinite;
+                        }
+                        cacheManager.setCache(apiParameters.getHash(), response, expiration);
                         try {
                             return mapper.readValue(response, ForecastModel.class);
                         } catch (Exception e) {
