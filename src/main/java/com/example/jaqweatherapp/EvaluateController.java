@@ -9,6 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -25,6 +27,7 @@ import java.util.prefs.Preferences;
 public class EvaluateController implements Initializable {
     @FXML Button fetchButton;
     @FXML Button importButton;
+    @FXML Label loadingStatus;
     FilterModel filterModel = Context.getInstance().getFilterModel();
     SearchModel searchModel = Context.getInstance().getSearchModel();
     DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
@@ -34,12 +37,38 @@ public class EvaluateController implements Initializable {
     CacheManager cacheManager = Context.getInstance().getCacheManager();
     Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
 
+    enum LoadingStatus {
+        Loading(Color.YELLOW, "Ładowanie..."),
+        Success(Color.GREEN, "Załadowano dane pomyślnie!"),
+        Failure_Wrong_File(Color.RED, "Zły format pliku!"),
+        Failure_Timeout(Color.RED, "Nie można pobrać danych z serwisu! Spróbuj później"),
+        Failure_Incomplete_Data(Color.RED, "Uzupełnij dane!"),
+        Failure_Incomplete_Filters(Color.RED, "Musisz wybrać jakie dane chcesz sprawdzić!"),
+        Failure_Incomplete_Address(Color.RED, "Uzupełnij adres!"),
+        Failure_Incomplete_Coords(Color.RED, "Uzupełnij współrzędne!"),
+        Failure_Wrong_Coords(Color.RED, "Wprowadź poprawne współrzędne!");
+        public final Color color;
+        public final String message;
+        LoadingStatus(Color color, String message) {
+            this.color = color;
+            this.message = message;
+        }
+    }
+    private void setLoadingStatus(LoadingStatus status) {
+        loadingStatus.setText(status.message);
+        loadingStatus.setTextFill(status.color);
+    }
     public void initialize(URL location, ResourceBundle resources) {
-        fetchButton.setOnAction(event -> {fetchFromApi();});
-        importButton.setOnAction(event -> {fetchFromFile();});
+        fetchButton.setOnAction(event -> {
+            setLoadingStatus(LoadingStatus.Loading);
+            fetchFromApi();
+        });
+        importButton.setOnAction(event -> {
+            setLoadingStatus(LoadingStatus.Loading);
+            fetchFromFile();
+        });
 
     }
-
     private void fetchFromFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
@@ -57,7 +86,7 @@ public class EvaluateController implements Initializable {
             mapper.readValue(importFile, ForecastModel.class);
             createChartPopup();
         } catch (IOException e) {
-            e.printStackTrace();
+            setLoadingStatus(LoadingStatus.Failure_Wrong_File);
         }
 
     }
@@ -84,6 +113,10 @@ public class EvaluateController implements Initializable {
             String val = params.get("hourly") + (params.get("hourly").isEmpty() ? "" : ",") + opt.value;
             params.add("hourly", val);
         }
+        if(params.get("hourly").isEmpty()) {
+            setLoadingStatus(LoadingStatus.Failure_Incomplete_Filters);
+            return false;
+        }
         String currentTemp = switch (Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString()))) {
             case Unit.Fahrenheit -> "fahrenheit";
             default -> "celsius";
@@ -101,11 +134,14 @@ public class EvaluateController implements Initializable {
         if (searchModel.currentSearchType == SearchController.SearchType.City
                 && searchModel.areCoordsEmpty) {
             if (searchModel.isLocationEmpty) {
-                System.out.println("Uzupełnij adres");
+                setLoadingStatus(LoadingStatus.Failure_Incomplete_Address);
                 return false;
             }
         } else if (searchModel.areCoordsEmpty) {
-            System.out.println("Uzupełnij współrzędne");
+            setLoadingStatus(LoadingStatus.Failure_Incomplete_Coords);
+            return false;
+        } else if(!searchModel.areCoordsCorrect()) {
+            setLoadingStatus(LoadingStatus.Failure_Wrong_Coords);
             return false;
         }
         params.add("wind_speed_unit", currentSpeed);
@@ -114,6 +150,7 @@ public class EvaluateController implements Initializable {
         return true;
     }
     private void createChartPopup() {
+        setLoadingStatus(LoadingStatus.Success);
         Parent root;
         try {
             root = new FXMLLoader(App.class.getResource("chart-view.fxml")).load();
@@ -156,6 +193,7 @@ public class EvaluateController implements Initializable {
                         // It implicitly writes to global ForeastModel
                         return mapper.readValue(response, ForecastModel.class);
                     } catch (Exception e) {
+                        setLoadingStatus(LoadingStatus.Failure_Timeout);
                         e.printStackTrace();
                     }
                 } else {

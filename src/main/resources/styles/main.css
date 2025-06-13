@@ -57,3 +57,8 @@
     -fx-border-color: #9f9f9f;
     -fx-background-color: #d2d2d2;
 }
+
+.dataStatusLabel {
+    -fx-font-size: 14;
+    -fx-text-fill: white;
+}
