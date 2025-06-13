@@ -11,3 +11,7 @@
     -fx-font-size: 25px;
     -fx-font-weight: bold;
 }
+
+.aside {
+    -fx-background-color: #dbf3ff;
+}

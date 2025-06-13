@@ -7,39 +7,47 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-    fx:controller="com.example.jaqweatherapp.ChartController"
+      fx:controller="com.example.jaqweatherapp.ChartController"
 >
-    <padding>
-        <Insets left="10" right="10" top="10" bottom="10" />
-    </padding>
-    <VBox VBox.vgrow="ALWAYS">
-        <HBox VBox.vgrow="ALWAYS" spacing="15">
-            <VBox spacing="15">
-                <VBox spacing="5">
-                    <Label styleClass="filterChartLabel">Wybierz filtr:</Label>
-                    <VBox fx:id="filterList" spacing="10" styleClass="filterChartList">
-                        <padding>
-                            <Insets left="10" right="10" top="10" bottom="10"/>
-                        </padding>
-                    </VBox>
-                </VBox>
-                <VBox spacing="5">
-                    <Label styleClass="filterChartLabel">Eksportuj do pliku:</Label>
-                    <VBox fx:id="exportList" spacing="5" styleClass="filterChartList">
-                        <padding>
-                            <Insets left="10" right="10" top="10" bottom="10"/>
-                        </padding>
-                    </VBox>
-                    <Button fx:id="exportButton">Eksportuj</Button>
+    <HBox VBox.vgrow="ALWAYS" spacing="15">
+        <VBox spacing="15" minWidth="200" styleClass="aside">
+            <padding>
+                <Insets left="10" right="10" top="10" bottom="10" />
+            </padding>
+            <VBox spacing="5">
+                <Label styleClass="filterChartLabel">Wybierz filtr:</Label>
+                <VBox fx:id="filterList" spacing="10" styleClass="filterChartList">
+                    <padding>
+                        <Insets left="10" right="10" top="10" bottom="10"/>
+                    </padding>
                 </VBox>
             </VBox>
-            <VBox HBox.hgrow="ALWAYS">
-                <Label fx:id="chartTitle" styleClass="chartTitle"></Label>
-                <HBox fx:id="chartContainer" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"></HBox>
+            <VBox spacing="5">
+                <Label styleClass="filterChartLabel">Eksportuj do pliku:</Label>
+                <VBox fx:id="exportList" spacing="5" styleClass="filterChartList">
+                    <padding>
+                        <Insets left="10" right="10" top="10" bottom="10"/>
+                    </padding>
+                </VBox>
+                <VBox spacing="3">
+                    <TextField fx:id="exportFilename"></TextField>
+                    <Button fx:id="exportButton" maxWidth="Infinity">Eksportuj</Button>
+                    <Label fx:id="exportFeedback" wrapText="true" maxWidth="180">></Label>
+                </VBox>
             </VBox>
-        </HBox>
-        <HBox></HBox>
-    </VBox>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets left="10" right="10" top="10" bottom="10" />
+            </padding>
+            <VBox>
+                <Label fx:id="locationName" styleClass="chartTitle"></Label>
+                <Label fx:id="locationCoords"></Label>
+            </VBox>
+            <HBox fx:id="chartContainer" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"></HBox>
+        </VBox>
+    </HBox>
 </VBox>

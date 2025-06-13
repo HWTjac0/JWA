@@ -1,16 +1,20 @@
 package com.example.jaqweatherapp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @JsonDeserialize(using = ForecastModelDeserializer.class)
+@JsonSerialize(using = ForecastModelSerializer.class)
 public class ForecastModel {
     public HashMap<String, DataSeries> dataMap = new HashMap<>();
     public List<Long> dateSeries = new ArrayList<Long>();
+    @JsonIgnore
+    public Set<String> exportDataSet  = new HashSet<>();
     @JsonIgnore
     public String displayAddress;
     @JsonIgnore

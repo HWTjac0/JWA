@@ -22,8 +22,7 @@ public class CacheManager {
     }
     private CacheUnit readCache(Path cachePath) {
         try {
-            CacheUnit cacheUnit = mapper.readValue(cachePath.toFile(), CacheUnit.class);
-            return cacheUnit;
+            return mapper.readValue(cachePath.toFile(), CacheUnit.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

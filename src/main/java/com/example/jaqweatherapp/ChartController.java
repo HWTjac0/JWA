@@ -1,5 +1,6 @@
 package com.example.jaqweatherapp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -9,12 +10,15 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Timestamp;
@@ -23,31 +27,100 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class ChartController implements Initializable {
     ForecastModel forecastModel;
     SearchModel searchModel = Context.getInstance().getSearchModel();
     GeocodingApiClient geocodingApiClient = Context.getInstance().getGeocodingApiClient();
     Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
-
     @FXML private HBox chartContainer;
-    @FXML private Label chartTitle;
+    @FXML private Label locationName;
+    @FXML private Label locationCoords;
     @FXML private VBox filterList;
     @FXML private VBox exportList;
     @FXML private Button exportButton;
+    @FXML private TextField exportFilename;
+    @FXML private Label exportFeedback;
+    DateTimeFormatter exportDefaultFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+
+    List<CheckBox> exportCheckBoxes = new ArrayList<>();
+
+    enum ExportStatus {
+        Success(Color.GREEN, "Eksportowano pomyślnie!"),
+        Failure_File_Exists(Color.RED, "Plik o takiej nazwie już istnieje!"),
+        Failure_Data_Empty(Color.RED,"Musisz wybrać dane do eksportowania!"),
+        Failure_Unknown(Color.RED, "Eksportowanie zakończone niepowodzeniem!");
+        private final Color color;
+        private final String message;
+        ExportStatus(Color color, String message) {
+            this.color = color;
+            this.message = message;
+        }
+        public Color getColor() { return color; }
+        public String getMessage() { return message; }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         forecastModel = new ForecastModel(Context.getInstance().getForecastModel());
+        initLocation();
         initFilterList();
         initExportList();
         initExportButton();
-        chartTitle.setText("Dane pogodowe dla: " + getDisplayAddress());
+        initExportFilename();
         searchModel.locationName = "";
     }
+    private void initExportFilename() {
+        String fileName = LocalDateTime.now().format(exportDefaultFormat) + ";" + String.join("_", forecastModel.dataMap.keySet());
+        exportFilename.setText(fileName);
+    }
+
+    private void initLocation() {
+        String l = getDisplayAddress();
+        locationName.setText("Dane pogodowe dla: " + (
+                l == null ? "Nieokreślona lokalizacja" : l )
+        );
+        locationCoords.setText("Współrzędne geograficzne: (" +
+                searchModel.coordinates.latitude + ", " + searchModel.coordinates.longitude + ")"
+                );
+    }
+    private void setExportFeedback(ExportStatus status) {
+        String color = "rgb(" + status.getColor().getRed() + "," + status.getColor().getGreen() + "," + status.getColor().getBlue() + ")";
+        exportFeedback.setText(status.getMessage());
+        exportFeedback.setTextFill(status.getColor());
+    }
     private void initExportButton(){
-        DirectoryChooser directoryChooser = new DirectoryChooser();
         exportButton.setOnAction(event -> {
             Path exportPath = Paths.get(prefs.get("export_path", SettingsModel.getDefaultExportPath().toString()));
+            List<CheckBox> selectedCheckBoxes = exportCheckBoxes.stream().filter(CheckBox::isSelected).toList();
+            if(selectedCheckBoxes.isEmpty()) {
+                setExportFeedback(ExportStatus.Failure_Data_Empty);
+                return;
+            }
+            forecastModel.exportDataSet.clear();
+            for(CheckBox checkBox : selectedCheckBoxes){
+                forecastModel.exportDataSet.add(checkBox.getUserData().toString());
+            }
+            String fileName = LocalDateTime.now().format(exportDefaultFormat) + String.join("_", forecastModel.dataMap.keySet());
+            if(!exportFilename.getText().trim().isEmpty()) {
+               fileName = exportFilename.getText().trim();
+            }
+            fileName += ".json";
+            Path exportFilePath = Paths.get(exportPath.toString(), fileName);
+            if(Files.exists(exportFilePath)) {
+                setExportFeedback(ExportStatus.Failure_File_Exists);
+                return;
+            }
+            File file = new File(exportFilePath.toUri());
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                mapper.writeValue(file, forecastModel);
+                setExportFeedback(ExportStatus.Success);
+            } catch (IOException e) {
+                setExportFeedback(ExportStatus.Failure_Unknown);
+            }
+
         });
     }
     private String getDisplayAddress() {
@@ -64,6 +137,7 @@ public class ChartController implements Initializable {
             exportCheckbox.setMaxWidth(Double.MAX_VALUE);
             exportCheckbox.setSelected(true);
             exportList.getChildren().add(exportCheckbox);
+            exportCheckBoxes.add(exportCheckbox);
         }
     }
     private void initFilterList() {
