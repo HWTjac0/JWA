@@ -9,7 +9,7 @@
 <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" fx:controller="com.example.jaqweatherapp.EvaluateController" >
     <HBox spacing="10" HBox.hgrow="NEVER">
         <VBox>
-            <Button styleClass="evalButton" text="Załaduj z pliku/plików">
+            <Button fx:id="importButton" styleClass="evalButton" text="Załaduj z pliku/plików">
                 <padding>
                     <Insets left="15" right="15" top="10" bottom="10" />
                 </padding>

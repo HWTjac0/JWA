@@ -10,8 +10,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -22,6 +24,7 @@ import java.util.prefs.Preferences;
 
 public class EvaluateController implements Initializable {
     @FXML Button fetchButton;
+    @FXML Button importButton;
     FilterModel filterModel = Context.getInstance().getFilterModel();
     SearchModel searchModel = Context.getInstance().getSearchModel();
     DateRangeModel dateRangeModel = Context.getInstance().getDateRangeModel();
@@ -30,59 +33,35 @@ public class EvaluateController implements Initializable {
     ApiParameters apiParameters = new ApiParameters();
     CacheManager cacheManager = Context.getInstance().getCacheManager();
     Preferences prefs = Preferences.userRoot().node("/com/hwtjac0/JaqWeatherApp");
+
     public void initialize(URL location, ResourceBundle resources) {
-        fetchButton.setOnAction(event -> {
-            apiParameters.clear();
-
-            if(!setFilterParams(apiParameters)) return;
-            setDataRangeParams(apiParameters);
-
-            apiParameters.add("latitude", String.valueOf(searchModel.coordinates.latitude));
-            apiParameters.add("longitude", String.valueOf(searchModel.coordinates.longitude));
-            ObjectMapper mapper = new ObjectMapper();
-            Task<ForecastModel> forecastTask = new Task<>() {
-                @Override
-                protected ForecastModel call() throws Exception {
-                    forecastModel.dateSeries.clear();
-                    forecastModel.dataMap.clear();
-                    Result<String> res = cacheManager.getCache(apiParameters.getHash());
-                    if(!res.valid()) {
-                        CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
-                        String response = modelPromise.join();
-                        CacheTTL expiration = CacheTTL.Hour;
-                        if(dateRangeModel.dataRangeType == DateRangeModel.DataRangeType.Historic &&
-                                dateRangeModel.historicEndDate.isBefore(LocalDate.now())) {
-                            expiration = CacheTTL.Infinite;
-                        }
-                        cacheManager.setCache(apiParameters.getHash(), response, expiration);
-                        try {
-                            return mapper.readValue(response, ForecastModel.class);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        return mapper.readValue(res.data(), ForecastModel.class);
-                    }
-                    return null;
-                }
-            };
-            forecastTask.setOnSucceeded(e -> {
-                Parent root;
-                try {
-                    root = new FXMLLoader(App.class.getResource("chart-view.fxml")).load();
-                    Font.loadFont(EvaluateController.class.getResource("/fonts/Inter.ttf").toExternalForm(), 24);
-                    root.getStylesheets().add(App.class.getResource("/styles/chartpopup.css").toExternalForm());
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.show();
-            });
-            new Thread(forecastTask).start();
-        });
+        fetchButton.setOnAction(event -> {fetchFromApi();});
+        importButton.setOnAction(event -> {fetchFromFile();});
 
     }
+
+    private void fetchFromFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Json Files", "*.json"),
+                new FileChooser.ExtensionFilter("Text Files", "*.txt")
+        );
+        fileChooser.setInitialDirectory(new File(prefs.get("export_path", SettingsModel.getDefaultExportPath().toString())));
+        File importFile = fileChooser.showOpenDialog(null);
+        if(importFile == null) {
+            return;
+        }
+        System.out.println(importFile.getAbsolutePath());
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            mapper.readValue(importFile, ForecastModel.class);
+            createChartPopup();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void setDataRangeParams(ApiParameters params) {
         switch (dateRangeModel.dataRangeType) {
             case Forecast -> {
@@ -95,16 +74,17 @@ public class EvaluateController implements Initializable {
             }
         }
     }
+
     private Boolean setFilterParams(ApiParameters params) {
         params.add("hourly", "");
-        for(FilterOption opt : filterModel.filters) {
-            if(!opt.isSet) {
+        for (FilterOption opt : filterModel.filters) {
+            if (!opt.isSet) {
                 continue;
             }
             String val = params.get("hourly") + (params.get("hourly").isEmpty() ? "" : ",") + opt.value;
             params.add("hourly", val);
         }
-        String currentTemp = switch(Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString()))){
+        String currentTemp = switch (Unit.get(prefs.get("unit_temperature", Unit.Celsius.toString()))) {
             case Unit.Fahrenheit -> "fahrenheit";
             default -> "celsius";
         };
@@ -120,7 +100,7 @@ public class EvaluateController implements Initializable {
         };
         if (searchModel.currentSearchType == SearchController.SearchType.City
                 && searchModel.areCoordsEmpty) {
-            if(searchModel.isLocationEmpty) {
+            if (searchModel.isLocationEmpty) {
                 System.out.println("Uzupełnij adres");
                 return false;
             }
@@ -132,5 +112,61 @@ public class EvaluateController implements Initializable {
         params.add("temperature_unit", currentTemp);
         params.add("precipitation_unit", currentPrec);
         return true;
+    }
+    private void createChartPopup() {
+        Parent root;
+        try {
+            root = new FXMLLoader(App.class.getResource("chart-view.fxml")).load();
+            Font.loadFont(EvaluateController.class.getResource("/fonts/Inter.ttf").toExternalForm(), 24);
+            root.getStylesheets().add(App.class.getResource("/styles/chartpopup.css").toExternalForm());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    private void fetchFromApi() {
+
+        apiParameters.clear();
+
+        if (!setFilterParams(apiParameters)) return;
+        setDataRangeParams(apiParameters);
+
+        apiParameters.add("latitude", String.valueOf(searchModel.coordinates.latitude));
+        apiParameters.add("longitude", String.valueOf(searchModel.coordinates.longitude));
+        ObjectMapper mapper = new ObjectMapper();
+        Task<ForecastModel> forecastTask = new Task<>() {
+            @Override
+            protected ForecastModel call() throws Exception {
+                forecastModel.dateSeries.clear();
+                forecastModel.dataMap.clear();
+                Result<String> res = cacheManager.getCache(apiParameters.getHash());
+                if (!res.valid()) {
+                    CompletableFuture<String> modelPromise = weatherApiClient.getForecast(apiParameters.getParameters());
+                    String response = modelPromise.join();
+                    CacheTTL expiration = CacheTTL.Hour;
+                    if (dateRangeModel.dataRangeType == DateRangeModel.DataRangeType.Historic &&
+                            dateRangeModel.historicEndDate.isBefore(LocalDate.now())) {
+                        expiration = CacheTTL.Infinite;
+                    }
+                    cacheManager.setCache(apiParameters.getHash(), response, expiration);
+                    try {
+                        // It implicitly writes to global ForeastModel
+                        return mapper.readValue(response, ForecastModel.class);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    return mapper.readValue(res.data(), ForecastModel.class);
+                }
+                return null;
+            }
+        };
+        forecastTask.setOnSucceeded(e -> {
+            createChartPopup();
+        });
+        new Thread(forecastTask).start();
     }
 }
