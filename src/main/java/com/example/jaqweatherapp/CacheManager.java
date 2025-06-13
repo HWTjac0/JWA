@@ -28,14 +28,22 @@ public class CacheManager {
         }
     }
     public void invalidateCache(String hash) {
-        Path cachePath = availableCache.get(hash);
-        cachePath.toFile().delete();
+        deleteCache(availableCache.get(hash));
         availableCache.remove(hash);
+    }
+    public void deleteCache(Path cachePath) {
+        cacheDir.toFile().delete();
     }
     public Map<String, Path> readAvailableCache() {
         Map<String, Path> cache = new HashMap<>();
         for(File file : cacheDir.toFile().listFiles()) {
-            cache.put(file.getName().substring(0, file.getName().lastIndexOf(".")), file.toPath());
+            String cacheName =file.getName().substring(0, file.getName().lastIndexOf("."));
+            CacheUnit c = readCache(file.toPath());
+            if(c.isExpired()) {
+                file.delete();
+            } else {
+                cache.put(cacheName, file.toPath());
+            }
         }
         return cache;
     }

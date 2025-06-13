@@ -15,3 +15,7 @@
 .aside {
     -fx-background-color: #dbf3ff;
 }
+.chartAdditionalInfo {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}

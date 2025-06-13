@@ -8,6 +8,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.jaqweatherapp.ChartController"
@@ -48,6 +49,19 @@
                 <Label fx:id="locationCoords"></Label>
             </VBox>
             <HBox fx:id="chartContainer" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"></HBox>
+            <VBox>
+                <Text styleClass="chartAdditionalInfo">Dodatkowe informacje</Text>
+                <GridPane hgap="3" vgap="7">
+                    <Label GridPane.rowIndex="0" GridPane.columnIndex="0">Maksymalna wartość:</Label>
+                    <Label GridPane.rowIndex="1" GridPane.columnIndex="0">Minimalna wartość:</Label>
+                    <Label GridPane.rowIndex="2" GridPane.columnIndex="0">Średnia wartość: </Label>
+                    <Label GridPane.rowIndex="3" GridPane.columnIndex="0">Trend: </Label>
+                    <Label fx:id="chartAddInfoMax" GridPane.rowIndex="0" GridPane.columnIndex="1"></Label>
+                    <Label fx:id="chartAddInfoMin" GridPane.rowIndex="1" GridPane.columnIndex="1"></Label>
+                    <Label fx:id="chartAddInfoAvg" GridPane.rowIndex="2" GridPane.columnIndex="1"></Label>
+                    <Label fx:id="chartAddInfoSlope" GridPane.rowIndex="3" GridPane.columnIndex="1"></Label>
+                </GridPane>
+            </VBox>
         </VBox>
     </HBox>
 </VBox>

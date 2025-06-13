@@ -3,31 +3,27 @@ package com.example.jaqweatherapp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Timestamp;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 public class ChartController implements Initializable {
     ForecastModel forecastModel;
@@ -42,6 +38,11 @@ public class ChartController implements Initializable {
     @FXML private Button exportButton;
     @FXML private TextField exportFilename;
     @FXML private Label exportFeedback;
+
+    @FXML private Label chartAddInfoMax;
+    @FXML private Label chartAddInfoMin;
+    @FXML private Label chartAddInfoAvg;
+    @FXML private Label chartAddInfoSlope;
     DateTimeFormatter exportDefaultFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
     List<CheckBox> exportCheckBoxes = new ArrayList<>();
@@ -150,12 +151,14 @@ public class ChartController implements Initializable {
 
             filterButton.onActionProperty().set(event -> {
                 buildChart(filterButton.getUserData().toString());
+                buildChartAddtionalInfo(filterButton.getUserData().toString());
             });
 
             filterList.getChildren().add(filterButton);
         }
         filterGroup.getToggles().getFirst().setSelected(true);
         buildChart(filterGroup.getSelectedToggle().getUserData().toString());
+        buildChartAddtionalInfo(filterGroup.getSelectedToggle().getUserData().toString());
     }
     private void buildChart(String currentFilter) {
         chartContainer.getChildren().clear();
@@ -193,15 +196,44 @@ public class ChartController implements Initializable {
 
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setCreateSymbols(false);
+        // MAIN DATA
         XYChart.Series<Number, Number> series = new XYChart.Series();
         for (int i = 0; i < forecastModel.dateSeries.size(); i++) {
             series.getData().add(new XYChart.Data<>(dates.get(i), data.get(i)));
         }
         chart.getData().add(series);
+        // TREND DATA
+        XYChart.Series<Number, Number> trendSeries = new XYChart.Series<>();
+        RegressionResult trend = forecastModel.statsMap.get(currentFilter).regressionResult();
+        for(int i = 0; i < forecastModel.dateSeries.size(); i++) {
+           trendSeries.getData().add(new XYChart.Data<>(dates.get(i), trend.intercept() + dates.get(i) * trend.slope()));
+        }
+        chart.getData().add(trendSeries);
         chart.setLegendVisible(false);
         chart.setPrefWidth(Region.USE_COMPUTED_SIZE);
         chart.setPrefHeight(Region.USE_COMPUTED_SIZE);
         HBox.setHgrow(chart, Priority.ALWAYS);
         chartContainer.getChildren().add(chart);
+    }
+    private void buildChartAddtionalInfo(String currentFilter) {
+        Stats stats = forecastModel.statsMap.get(currentFilter);
+        String unit = forecastModel.dataMap.get(currentFilter).unit().replace("\"", "");
+        NumberFormat numFormatter = new DecimalFormat("#0.00");
+        chartAddInfoMax.setText(stats.maxValue().getValue() + unit + ", " + stats.maxValue().getKey());
+        chartAddInfoMin.setText(stats.minValue().getValue() + unit + ", " + stats.minValue().getKey());
+        chartAddInfoAvg.setText(numFormatter.format(stats.average()) + unit);
+
+        Color trendColor = Color.YELLOW;
+        String trend = "Nieokreślony";
+        Double slope =stats.regressionResult().slope();
+        if(slope > 0) {
+            trendColor = Color.GREEN;
+            trend = "Rosnący";
+        } else if(slope < 0) {
+            trendColor = Color.RED;
+            trend = "Malejący";
+        }
+        chartAddInfoSlope.setText(trend);
+        chartAddInfoSlope.setTextFill(trendColor);
     }
 }
