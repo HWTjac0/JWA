@@ -35,10 +35,8 @@ public class RootController {
 
             if (result.isPresent() && result.get() == applyButton) {
                 settingsModel.applySettings();
-                System.out.println("OK");
             } else {
                 settingsModel.setDefaults();
-                System.out.println("Settings dialog cancelled.");
             }
         } catch (IOException e) {
             e.printStackTrace();

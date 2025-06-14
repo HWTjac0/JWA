@@ -18,7 +18,6 @@ public class CacheManager {
     public CacheManager() {
         cacheDir = getUserCacheDir();
         availableCache = readAvailableCache();
-        System.out.println(availableCache);
     }
     private CacheUnit readCache(Path cachePath) {
         try {

@@ -82,7 +82,6 @@ public class EvaluateController implements Initializable {
         if(importFile == null) {
             return;
         }
-        System.out.println(importFile.getAbsolutePath());
         ObjectMapper mapper = new ObjectMapper();
         try {
             mapper.readValue(importFile, ForecastModel.class);
@@ -205,7 +204,6 @@ public class EvaluateController implements Initializable {
                                 dateRangeModel.historicEndDate.isBefore(LocalDate.now())) {
                             expiration = CacheTTL.Infinite;
                         }
-                        System.out.println(weatherApiClient.baseUrl + weatherApiClient.buildQueryString(apiParameters.getParameters()));
                         cacheManager.setCache(
                                 apiParameters.getHash(),
                                 response,

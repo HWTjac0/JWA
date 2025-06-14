@@ -36,7 +36,7 @@
                 <VBox spacing="3">
                     <TextField fx:id="exportFilename"></TextField>
                     <Button fx:id="exportButton" maxWidth="Infinity">Eksportuj</Button>
-                    <Label fx:id="exportFeedback" wrapText="true" maxWidth="180">></Label>
+                    <Label fx:id="exportFeedback" wrapText="true" maxWidth="180"></Label>
                 </VBox>
             </VBox>
         </VBox>

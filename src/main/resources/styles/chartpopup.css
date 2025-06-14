@@ -6,6 +6,8 @@
 }
 .filterChartLabel {
     -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 .chartTitle {
     -fx-font-size: 25px;
@@ -13,7 +15,7 @@
 }
 
 .aside {
-    -fx-background-color: #dbf3ff;
+    -fx-background-color: #7bcaff;
 }
 .chartAdditionalInfo {
     -fx-font-size: 16px;
