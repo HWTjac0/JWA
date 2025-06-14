@@ -19,8 +19,8 @@ record RegressionResult(double slope, double intercept) {}
 public class ForecastModel {
     public HashMap<String, DataSeries> dataMap = new HashMap<>();
     public List<Long> dateSeries = new ArrayList<Long>();
-    public double latitude;
-    public double longitude;
+    public Double latitude = null;
+    public Double longitude = null;
     @JsonIgnore
     public HashMap<String, Stats> statsMap = new HashMap<>();
     @JsonIgnore

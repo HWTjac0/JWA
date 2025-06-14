@@ -12,14 +12,17 @@ import java.time.format.DateTimeFormatter;
 
 public class ForecastModelSerializer extends StdSerializer<ForecastModel> {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    SearchModel searchModel = Context.getInstance().getSearchModel();
     public ForecastModelSerializer() {
         super(ForecastModel.class);
     }
     @Override
     public void serialize(ForecastModel forecastModel, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
-        gen.writeNumberField("longitude", forecastModel.longitude);
-        gen.writeNumberField("latitude", forecastModel.latitude);
+        double longitude = forecastModel.longitude != null ? forecastModel.longitude : searchModel.coordinates.longitude;
+        double latitude = forecastModel.latitude != null ? forecastModel.latitude : searchModel.coordinates.latitude;
+        gen.writeNumberField("longitude", longitude);
+        gen.writeNumberField("latitude", latitude);
         gen.writeObjectFieldStart("hourly_units");
         gen.writeStringField("time", "iso8601");
         for(String v : forecastModel.exportDataSet) {
